@@ -992,7 +992,11 @@ def test_skill_lists_skills(cli: Cli):
     assert r.out.index("avoid-ai-writing-russian") < r.out.index("antiplagiat")
     assert "aiw-ru skill ИМЯ" in r.out
     data = json.loads(cli("skill", "--json").out)
-    assert [s["name"] for s in data] == ["avoid-ai-writing-russian", "antiplagiat"]
+    assert [s["name"] for s in data] == [
+        "avoid-ai-writing-russian",
+        "antiplagiat",
+        "russian-medical-academic-editor",
+    ]
     assert data[0]["files"] == [
         f"references/{n}.md"
         for n in (
@@ -1010,6 +1014,14 @@ def test_skill_lists_skills(cli: Cli):
     ]
     assert data[1]["description"].startswith("Подготовка русского текста")
     assert data[1]["files"] == ["references/antiplagiat.md", "references/domate.md"]
+    assert data[2]["description"].startswith("Редактура русскоязычных медицинских")
+    assert data[2]["files"] == [
+        "LICENSE",
+        "NOTICE.md",
+        "references/decisions-and-examples.md",
+        "references/medical-invariants.md",
+        "references/runtime-and-artifacts.md",
+    ]
 
 
 def test_skill_files_in_hidden_directory(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):

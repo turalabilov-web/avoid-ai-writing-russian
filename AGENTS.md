@@ -4,13 +4,14 @@
 
 ## Что это
 
-Русская адаптация скилла [avoid-ai-writing](https://github.com/conorbronsdon/avoid-ai-writing): два скилла (`skills/avoid-ai-writing-russian`, `skills/antiplagiat`) и детектор на Python (пакет `aiw_ru` в `src/`, команда `aiw-ru`). Всё пишется на русском: документация, комментарии, сообщения коммитов. Идентификаторы в коде — на английском.
+Русская адаптация скилла [avoid-ai-writing](https://github.com/conorbronsdon/avoid-ai-writing): скиллы `skills/avoid-ai-writing-russian` и `skills/antiplagiat`, отдельный навык `skills/russian-medical-academic-editor` и детектор на Python (пакет `aiw_ru` в `src/`, команда `aiw-ru`). Всё пишется на русском: документация, комментарии, сообщения коммитов. Идентификаторы в коде — на английском.
 
 ## Устройство
 
 - `skills/avoid-ai-writing-russian/SKILL.md` — точка входа скилла: договор о правке, режимы, уровни серьёзности, формат ответа, «никогда не добавляй». Держать короче 500 строк.
 - `skills/avoid-ai-writing-russian/references/` — каталог примет по темам (`vocabulary.md`, `typography.md`, `sentences.md`, `rhetoric.md`, `chat.md`, `structure.md`) и профили контекста и голоса (`profiles.md`), а ещё справки о моделях (`models.md`), слепом судье (`judge.md`) и проверке правки свежим агентом (`review.md`). Оглавление и порядок чтения в SKILL.md: агент открывает файл темы, когда правит находку из неё, а не весь каталог.
 - `skills/antiplagiat/SKILL.md` — под-скилл подготовки к «Антиплагиату» и «Думейту»; `skills/antiplagiat/references/domate.md` — отчёт «Думейта», тепловая карта и скрипт для страницы отчёта; `skills/antiplagiat/references/antiplagiat.md` — уровни признаков ИИ в отчёте «Антиплагиата», версия модели и ручное исключение фрагментов.
+- `skills/russian-medical-academic-editor/SKILL.md` — отдельный навык научной редактуры русского медицинского текста. Линтер вызывается как `aiw-ru scan --context vak --no-model` и `aiw-ru validate`; алгоритмы детектора и валидатора он не меняет и команды `antiplagiat`, `calibrate`, `classify`, `judge` не вызывает. Справки лежат в его `references/`.
 - `src/aiw_ru/text.py` — нормализация (невидимые символы, подмена букв, ё→е) с картой смещений, маскирование защищённых областей, разбиение на блоки и предложения.
 - `src/aiw_ru/lexicon.py` — словари примет на мини-языке фраз (`*` — любое окончание).
 - `src/aiw_ru/detect.py` — детектор: словари, отпечатки, типографика, структура, стилометрия, оценка.

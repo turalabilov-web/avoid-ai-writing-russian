@@ -14,7 +14,7 @@
   <img src="docs/demo.gif" alt="Детектор aiw-ru находит 14 примет ИИ-стиля в рекламном абзаце, ставит правке 0/100, проверяет сохранность чисел, показывает вероятность ModernBERT для правки, и оценивает главу по фрагментам в духе «Антиплагиата»" width="800">
 </p>
 
-Скилл для ИИ-агентов (Claude Code, Codex, Cursor и других), который находит и убирает из русских текстов приметы машинной генерации: канцелярит, кальки с английского, «не просто X, а Y», тире-связки, одинаковый ритм предложений. К нему прилагается детектор на Python (`aiw-ru`) и под-скилл `antiplagiat` для текстов, которые пойдут в «Антиплагиат» или «Думейт»: он правит абзацы, подсвеченные в отчёте системы, и оценивает текст по фрагментам в духе её модуля ИИ-детекции.
+Скилл для ИИ-агентов (Claude Code, Codex, Cursor и других), который находит и убирает из русских текстов приметы машинной генерации: канцелярит, кальки с английского, «не просто X, а Y», тире-связки, одинаковый ритм предложений. К нему прилагается детектор на Python (`aiw-ru`) и под-скилл `antiplagiat` для текстов, которые пойдут в «Антиплагиат» или «Думейт»: он правит абзацы, подсвеченные в отчёте системы, и оценивает текст по фрагментам в духе её модуля ИИ-детекции. Отдельный навык `russian-medical-academic-editor` редактирует русский медицинский научный и учебный текст: `aiw-ru scan` в профиле `vak` без модели только показывает находки, решение остаётся за редактором.
 
 Это русская адаптация [avoid-ai-writing](https://github.com/conorbronsdon/avoid-ai-writing) Конора Бронсдона. Устройство скилла взято оттуда, каталог примет переписан под русский язык, детектор написан заново. Подробности в разделе [«Благодарности»](#благодарности).
 
@@ -25,6 +25,7 @@
 - [Установка](#установка)
 - [Как пользоваться](#как-пользоваться)
 - [Под-скилл antiplagiat](#под-скилл-antiplagiat)
+- [Навык медицинской редактуры](#навык-медицинской-редактуры)
 - [Детектор](#детектор)
 - [Что ловит каталог](#что-ловит-каталог)
 - [Ограничения](#ограничения)
@@ -66,13 +67,13 @@ claude plugin marketplace add ormeilu/avoid-ai-writing-russian
 claude plugin install avoid-ai-writing-russian@avoid-ai-writing-russian
 ```
 
-Плагин ставит оба скилла, `avoid-ai-writing-russian` и `antiplagiat`, вместе с детектором. Детектору нужен [uv](https://docs.astral.sh/uv/getting-started/installation/).
+Плагин ставит три скилла, `avoid-ai-writing-russian`, `antiplagiat` и `russian-medical-academic-editor`, вместе с детектором. Детектору нужен [uv](https://docs.astral.sh/uv/getting-started/installation/).
 
 ### Kimi Code, pi, Hermes и DeepSeek Harness
 
-Во всех четырёх средах ставится весь репозиторий: скиллы ссылаются друг на друга, а детектор лежит в корне. Манифесты (`.kimi-plugin/plugin.json`, `package.json`, `plugin.json`) указывают на ту же папку `skills/`.
+Во всех четырёх средах ставится весь репозиторий: `avoid-ai-writing-russian` и `antiplagiat` ссылаются друг на друга, `russian-medical-academic-editor` стоит отдельно, детектор лежит в корне. Манифесты (`.kimi-plugin/plugin.json`, `package.json`, `plugin.json`) указывают на ту же папку `skills/`.
 
-Kimi Code: внутри сессии `kimi` выполните команду ниже, подтвердите установку стороннего плагина и перезапустите сессию через `/reload`. Скиллы появятся как `avoid-ai-writing-russian:avoid-ai-writing-russian` и `avoid-ai-writing-russian:antiplagiat`.
+Kimi Code: внутри сессии `kimi` выполните команду ниже, подтвердите установку стороннего плагина и перезапустите сессию через `/reload`. Скиллы появятся как `avoid-ai-writing-russian:avoid-ai-writing-russian`, `avoid-ai-writing-russian:antiplagiat` и `avoid-ai-writing-russian:russian-medical-academic-editor`.
 
 ```text
 /plugins install https://github.com/ormeilu/avoid-ai-writing-russian
@@ -104,6 +105,10 @@ ln -s ~/src/avoid-ai-writing-russian/skills/avoid-ai-writing-russian ~/.dsh/skil
 ln -s ~/src/avoid-ai-writing-russian/skills/antiplagiat ~/.dsh/skills/antiplagiat
 ```
 
+```bash
+ln -s ~/src/avoid-ai-writing-russian/skills/russian-medical-academic-editor ~/.dsh/skills/russian-medical-academic-editor
+```
+
 Папку `~/.agents/skills/` читают ещё pi и Codex: ссылки там подхватят все три агента сразу.
 
 ### Claude Code, Codex и другие агенты: папка скилла
@@ -122,7 +127,11 @@ ln -s ~/src/avoid-ai-writing-russian/skills/avoid-ai-writing-russian ~/.claude/s
 ln -s ~/src/avoid-ai-writing-russian/skills/antiplagiat ~/.claude/skills/antiplagiat
 ```
 
-Для Codex используйте `~/.codex/skills/` или `~/.agents/skills/`, для Cursor — правила проекта. Агентам без поддержки SKILL.md можно передать как инструкцию текст `SKILL.md`, а файлы каталога из `references/` давать по мере надобности: в SKILL.md есть таблица, какой файл открывать для какой находки.
+```bash
+ln -s ~/src/avoid-ai-writing-russian/skills/russian-medical-academic-editor ~/.claude/skills/russian-medical-academic-editor
+```
+
+Для Codex используйте `~/.codex/skills/` или `~/.agents/skills/`, для Cursor — правила проекта. Устанавливаемый архив только навыка медицинской редактуры кладётся в ту же папку навыков и содержит один каталог `russian-medical-academic-editor`. Команда `aiw-ru` при этом остаётся отдельной зависимостью, архив её не содержит. Агентам без поддержки SKILL.md можно передать как инструкцию текст `SKILL.md`, а файлы каталога из `references/` давать по мере надобности: в SKILL.md есть таблица, какой файл открывать для какой находки.
 
 ### Детектор
 
@@ -218,6 +227,12 @@ aiw-ru models install
 На обзорной статье в 2600 слов правка 27 красных абзацев снизила долю ИИ в «Думейте» с 38 до 10 %, оригинальность не изменилась. На реферате два прохода по красным абзацам дали 42,72 → 9,38 → 0 %. Неразрывные пробелы процент не двигали ни там, ни там: снижала его правка каждого красного абзаца, даже лёгкая. Это два документа одного автора и одна версия детектора; цифры и ограничения — в [docs/domate.md](docs/domate.md).
 
 Скилл работает с вашим собственным текстом. Заимствования он помогает оформить как цитирования (кавычки и ссылка на источник), чтобы система засчитала их законно. Маскировать чужой текст перефразированием, синонимайзером или подменой символов он не будет: это выдача чужой работы за свою, а не спор с плохим детектором.
+
+## Навык медицинской редактуры
+
+`russian-medical-academic-editor` нужен для русской аннотации, протокола, обзора, диссертации, автореферата, медицинской статьи и учебного объяснения для хирургов. По умолчанию он только диагностирует. Правка отдельной копии начинается с явной просьбы и остаётся точечной. Линтер вызывается так: `aiw-ru scan` с `--context vak` и `--no-model`, затем `aiw-ru validate` с `--context vak`. Оценка линтера не подтверждает медицинское утверждение. Навык не ставит модели и не вызывает команды под-скилла `antiplagiat`.
+
+Текст навыка для агента печатает `aiw-ru skill russian-medical-academic-editor`.
 
 ## Детектор
 
