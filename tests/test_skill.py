@@ -95,8 +95,12 @@ SKILL_DIRS = sorted(d.name for d in SKILLS.iterdir() if (d / "SKILL.md").exists(
 
 
 def test_skills_found():
-    """оба скилла на месте"""
-    assert SKILL_DIRS == ["antiplagiat", "avoid-ai-writing-russian"]
+    """три скилла на месте, прежние два не переименованы"""
+    assert SKILL_DIRS == [
+        "antiplagiat",
+        "avoid-ai-writing-russian",
+        "russian-medical-academic-editor",
+    ]
 
 
 # ─── каждый скилл ───────────────────────────────────────────────────────

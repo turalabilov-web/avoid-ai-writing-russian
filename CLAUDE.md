@@ -8,7 +8,7 @@
 
 ## Плагин
 
-Репозиторий сам служит маркетплейсом: `.claude-plugin/marketplace.json` указывает на корень (`"source": "./"`), а `.claude-plugin/plugin.json` описывает плагин с двумя скиллами. После правки манифестов:
+Репозиторий сам служит маркетплейсом: `.claude-plugin/marketplace.json` указывает на корень (`"source": "./"`), а `.claude-plugin/plugin.json` описывает плагин. В `skills/` три навыка: `avoid-ai-writing-russian`, `antiplagiat` и `russian-medical-academic-editor`. После правки манифестов:
 
 ```bash
 claude plugin validate .

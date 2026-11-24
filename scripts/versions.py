@@ -122,6 +122,7 @@ SITES: list[VersionSite] = [
     ),
     _yaml_version("skills/avoid-ai-writing-russian/SKILL.md", FRONTMATTER_READ),
     _yaml_version("skills/antiplagiat/SKILL.md", FRONTMATTER_READ),
+    _yaml_version("skills/russian-medical-academic-editor/SKILL.md", FRONTMATTER_READ),
     _yaml_version("CITATION.cff", CFF_READ),
 ]
 
