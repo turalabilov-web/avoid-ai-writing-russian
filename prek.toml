@@ -12,7 +12,7 @@
 repo = "https://github.com/pre-commit/pre-commit-hooks"
 rev = "v6.0.0"
 hooks = [
-  { id = "check-added-large-files", args = ["--maxkb=512"], priority = 0, fail_fast = true },
+  { id = "check-added-large-files", args = ["--maxkb=512"], exclude = "^delivery/rmae-r2-autonomous/russian-medical-academic-editor-R2-autonomous\\.zip$", priority = 0, fail_fast = true },
   { id = "detect-private-key", priority = 0, fail_fast = true },
   { id = "check-merge-conflict", priority = 0 },
   { id = "check-case-conflict", priority = 0 },

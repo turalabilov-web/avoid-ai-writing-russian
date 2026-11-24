@@ -4,24 +4,39 @@
 
 ## Откуда брать CLI
 
-Нужна проверенная локальная команда `aiw-ru`. Сначала выполни `aiw-ru --version` и запиши путь исполняемого файла. Номер `2.10.1` сам по себе не доказывает, что команда собрана из той же копии, где лежит этот навык, и не доказывает, что навык в неё вложен.
+Упаковочная ревизия R2 Autonomous. Номер `2.10.1` в шапке навыка — номер проекта. Он не заменяет строку, которую печатает CLI, и не доказывает, что открыт именно этот навык.
 
-Если происхождение команды сверено, зови её напрямую, как в штатных командах ниже. Архив навыка эту команду не содержит. Нет команды — `BLOCKED`, поле `raw_report` остаётся `null`. `MANUAL_ONLY` только по прямой просьбе автора.
+Каталог навыка определяй по этому файлу: рядом с `SKILL.md` лежит `runtime/bootstrap.py`. Текущий каталог, `PATH` и прошлая venv путь не задают. Запусти:
+
+```bash
+python3 "$SKILL_ROOT/runtime/bootstrap.py"
+```
+
+`SKILL_ROOT` — абсолютный каталог установленного навыка. Успех — код 0 и JSON со `status` = `RUNTIME_READY`, `mode` = `source-run`. Дальше только абсолютные `python`, `pythonpath` и `checks_py`. Для каждого запуска окружение задаётся заново:
+
+```bash
+PYTHONPATH="$VERIFIED_SRC" "$VERIFIED_PYTHON" -m aiw_ru scan "$INPUT" --context vak --no-model --json
+PYTHONPATH="$VERIFIED_SRC" "$VERIFIED_PYTHON" -m aiw_ru validate "$ORIGINAL" "$CLEAN" --context vak --json
+```
+
+`$VERIFIED_PYTHON` — поле `python`, `$VERIFIED_SRC` — поле `pythonpath`. В том же процессе: `UV_OFFLINE=1` и `UV_PYTHON_DOWNLOADS=never`. `$INPUT`, `$ORIGINAL` и `$CLEAN` — пути к файлам. Бинарник `aiw-ru` из `PATH` не вызывай.
+
+Если JSON не `RUNTIME_READY`, поле `raw_report` остаётся `null`, статус `BLOCKED`. `MANUAL_ONLY` только по прямой просьбе автора.
 
 <!-- repo-only:start -->
-Если установленной команды нет, а рабочая копия и lockfile проверены, запускай так. `PROJECT_ROOT` — абсолютный проверенный корень, не чужой путь из примера:
+Этот блок только для рабочей копии репозитория без `runtime/bootstrap.py`. Установленный архив R2 Autonomous его не исполняет. Если установленной команды нет и встроенного runtime в этой копии нет, locked-прогон такой. `PROJECT_ROOT` — абсолютный проверенный корень, не чужой путь из примера:
 
 ```bash
 uv run --locked --project "$PROJECT_ROOT" aiw-ru scan "$INPUT" --context vak --no-model --json
 uv run --locked --project "$PROJECT_ROOT" aiw-ru validate "$ORIGINAL" "$CLEAN" --context vak --json
 ```
 
-`uv` должен быть доступен до запуска. Сеть и установку пакетов не включай. Относительный `uv run --project ../..` без `--locked` и без абсолютного корня не используй. Если среде нужен доступ в сеть, запиши причину и не меняй lockfile.
+Сеть не включай и lockfile не меняй. Относительный `uv run --project ../..` без `--locked` и без абсолютного корня не используй.
 <!-- repo-only:end -->
 
-`uv tool install aiw-ru==2.10.1` ставит опубликованный пакет и только с согласия пользователя. Одинаковый номер версии не доказывает, что сборки совпадают и что в пакете есть этот навык.
+`uv tool install` в эту ревизию не входит: это был бы отдельный режим установленной команды, и bootstrap его не выполняет. Одинаковый номер версии не доказывает, что сборки совпадают и что в пакете есть этот навык.
 
-Запуск `python -m aiw_ru` допустим из проверенных исходников, если зависимости уже стоят. В эпикризе укажи абсолютный `PYTHONPATH`, каталог источника и фактическую версию. Это не locked-прогон и не установленная команда. Без метаданных дистрибутива в отчёте будет `meta.aiwRu` = `0.0.0`. Оставь эту строку в сыром JSON. Рядом запиши версию из `pyproject.toml`. Цифру в логе не подменяй.
+Запуск после bootstrap — source-run: `python -m aiw_ru` из проверенных исходников, с абсолютным `PYTHONPATH`. Это не locked-прогон и не установленная команда. `CLI_INSTALL` и `LOCKED_PROJECT_RUN` остаются `NOT_RUN`. Без метаданных дистрибутива в отчёте будет `meta.aiwRu` = `0.0.0`. Оставь эту строку в сыром JSON. Рядом запиши заявленную версию проекта `2.10.1`, режим `source-run`, SHA-256 встроенного архива, каталог журнала и версии зависимостей. Цифру в логе не подменяй.
 
 Модели не ставь. Флаг `--no-model` передавай только в `scan`.
 
@@ -39,7 +54,14 @@ SHA-256 исходника посчитай до правки. Оригинал 
 
 ## Штатные команды
 
-Пример для одного блока. Для нескольких блоков запусти то же на каждый.
+Пример для одного блока. Для нескольких блоков запусти то же на каждый. Исполняемый файл бери из JSON bootstrap, не из `PATH`:
+
+```bash
+PYTHONPATH="$VERIFIED_SRC" "$VERIFIED_PYTHON" -m aiw_ru scan "$INPUT" --context vak --no-model --json
+PYTHONPATH="$VERIFIED_SRC" "$VERIFIED_PYTHON" -m aiw_ru validate "$ORIGINAL" "$CLEAN" --context vak --json
+```
+
+Флаги и порядок аргументов:
 
 ```bash
 aiw-ru scan "$INPUT" --context vak --no-model --json
@@ -52,15 +74,15 @@ Stdout пиши в отчёт как есть. Stderr и код выхода з�
 
 Нулевой `stats.words`, ненулевой `stats.ignoredRegions` или неразобранное исключение не дают `NO_EDIT_NEEDED` и `APPLIED_AND_VERIFIED` на весь запрошенный диапазон. Реестр покрытия и результат по каждому защищённому идентификатору пиши в эпикриз или в обёртку. Вложенный `raw_report` хранит объект CLI без правки полей. Пятый обязательный файл не создавай.
 
-Файл `checks.py` рядом с `SKILL.md` читает сырые байты и уже записанный JSON. Окончания строк он не переводит. Пример из каталога навыка, пути абсолютные:
+Файл `checks.py` рядом с `SKILL.md` читает сырые байты и уже записанный JSON. Окончания строк он не переводит. `$CHECKS_PY` — поле `checks_py` из JSON bootstrap, путь к копии в установленном навыке:
 
 ```bash
-python checks.py sha256 "$ORIGINAL"
-python checks.py coverage --source "$ORIGINAL" --scan-stdout "$SCAN_JSON" --exit-code 0
-python checks.py bind --source "$ORIGINAL" --spec "$SPEC"
-python checks.py protect --source "$ORIGINAL" --candidate "$CLEAN" --registry "$REGISTRY"
-python checks.py read-back --file "$CLEAN" --sha256 "$EXPECTED"
-python checks.py gate --request "$REQUEST"
+python3 "$CHECKS_PY" sha256 "$ORIGINAL"
+python3 "$CHECKS_PY" coverage --source "$ORIGINAL" --scan-stdout "$SCAN_JSON" --exit-code 0
+python3 "$CHECKS_PY" bind --source "$ORIGINAL" --spec "$SPEC"
+python3 "$CHECKS_PY" protect --source "$ORIGINAL" --candidate "$CLEAN" --registry "$REGISTRY"
+python3 "$CHECKS_PY" read-back --file "$CLEAN" --sha256 "$EXPECTED"
+python3 "$CHECKS_PY" gate --request "$REQUEST"
 ```
 
 Файловый статус бывает `FILE_CHECKS_PASS`, `FILE_CHECKS_FAIL` или `BLOCKED`. Для изменённой пары ответ содержит `semantic_review_required`. Это не статус текста и не научная приёмка. Помощник не ставит `NO_EDIT_NEEDED`, `REJECT_FINDING`, `APPLIED_AND_VERIFIED` и научный `ROLLBACK`. Запись сверки он принимает только вместе с SHA-256 фактических байтов; совпадение хэшей не доказывает вывод. Код выхода помощника не является приёмкой текста. Если помощника нет, повтори сверку чтением байтов.
@@ -82,7 +104,7 @@ python checks.py gate --request "$REQUEST"
 | `03_CLEAN_COPY.md` | Одна редакция. Без права на правку, без дефекта или после отклонения всех предложений это точная копия оригинала |
 | `04_EDIT_EPICRISIS.md` | Режим, версия и источник CLI, ограничения, решения, diff, сверка, поствалидация, хэши, статус |
 
-Одиночный JSON от `scan` можно сохранить как есть. Для нескольких блоков или единого журнала допустима обёртка. В ней поля: `execution_status`, `source_representation`, `tool_version`, `invocation`, `original_sha256`, `blocks`. У блока: `block_id`, `locator`, `sha256`, `exit_code`, `raw_report`, `stderr`. `raw_report` хранит объект CLI без правки полей. Если команда не запускалась, `raw_report` равен `null`, а `execution_status` равен `NOT_RUN` или `BLOCKED`, с причиной. Это не машинный отчёт.
+Одиночный JSON от `scan` можно сохранить как есть. Для нескольких блоков или единого журнала допустима обёртка. В ней поля: `execution_status`, `source_representation`, `tool_version`, `invocation`, `original_sha256`, `blocks`. У блока: `block_id`, `locator`, `sha256`, `exit_code`, `raw_report`, `stderr`. `raw_report` хранит объект CLI без правки полей. Если команда не запускалась, `raw_report` равен `null`, а `execution_status` равен `NOT_RUN` или `BLOCKED`, с причиной. Это не машинный отчёт. Для ревизии R2 Autonomous в ту же обёртку или в эпикриз допиши режим `source-run`, SHA-256 встроенного архива, абсолютный `python`, версии зависимостей, каталог журнала и стадию сбоя. Пятый обязательный файл не создавай.
 
 Чужой готовый отчёт пометь как принесённый, не как свой запуск. Не переписывай историю первичного лога.
 
@@ -97,7 +119,7 @@ python checks.py gate --request "$REQUEST"
 - `CANDIDATE_PENDING`: правка описана и ждёт автора, в чистовик не внесена.
 - `APPLIED_AND_VERIFIED`: разрешённые изменения лежат в отдельном чистовике, `validate` и смысловая сверка сделаны. Приёмка автором отдельна.
 - `MANUAL_ONLY`: автор явно просит разбор без CLI. Машинных цифр нет, `APPLIED_AND_VERIFIED` нет.
-- `BLOCKED`: нет CLI, файла, читаемого JSON или обязательного доказательства.
+- `BLOCKED`: среда bootstrap не поднялась, нет файла, читаемого JSON или обязательного доказательства.
 
 `NOT_RUN` ставь на пропущенную команду. Не рисуй балл и хэш, которых не было.
 

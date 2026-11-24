@@ -1,0 +1,605 @@
+{
+  "formulation": "AUTONOMOUS_PACKAGE_CANDIDATE",
+  "work_formulation": "WORK_AUTONOMOUS_PENDING",
+  "scientific_formulation": "SCIENTIFIC_ACCEPTANCE_PENDING",
+  "generated_at": "2026-11-24T20:08:21.856994+03:00",
+  "timezone": "Europe/Moscow",
+  "package_status": "AUTONOMOUS_PACKAGE_CANDIDATE",
+  "builder_cold_start_A": "PASS",
+  "builder_cold_start_B": "PASS",
+  "work_install": "NOT_RUN",
+  "work_cold_start_A": "NOT_RUN",
+  "work_cold_start_B": "NOT_RUN",
+  "scientific_acceptance": "PENDING",
+  "CLI_INSTALL": "NOT_RUN",
+  "LOCKED_PROJECT_RUN": "NOT_RUN",
+  "source_commit": "fef168622d9ffa1d7f8f9ebb241b6932659d62aa",
+  "baseline_commit": "fef168622d9ffa1d7f8f9ebb241b6932659d62aa",
+  "runtime_publication_commit": "87712f56edcfee5e1f8d30729f6c77d894f0a859",
+  "runtime_git_blob_sha1": "de5852884460187f467c5685d0bda81bd4ee78bb",
+  "runtime_sha256": "f0d0bfba47026ea033ffdffdf76d4a4fe10946ec955ac616d4731e6d28693bf4",
+  "runtime_bytes": 5479858,
+  "inner_sha256": "3718219490c52357e6bf9bb2564cd46dbf9252b7b9844ad6122f2d2393b232bb",
+  "candidate_zip": {
+    "filename": "russian-medical-academic-editor-R2-autonomous.zip",
+    "bytes": 5533530,
+    "sha256": "60f493286fbde8e5f759bd8339f137f57fafa9a1ba56e5dfa709bbd456de1485",
+    "members": [
+      {
+        "path": "russian-medical-academic-editor/LICENSE",
+        "bytes": 1104,
+        "sha256": "ad1103ff13b0d8824dbd44bee43009c0285684e955ca0839f8d8d9b99c1b4ca5"
+      },
+      {
+        "path": "russian-medical-academic-editor/NOTICE.md",
+        "bytes": 2311,
+        "sha256": "f660d669d6f91ae33902b11697083941c4a8b3a46343a61101f6ac20c9aedc69"
+      },
+      {
+        "path": "russian-medical-academic-editor/SKILL.md",
+        "bytes": 39089,
+        "sha256": "0a93904e8234db238cff8bc903271d2812702833a4ae5e0fa4e7594f7e54ef38"
+      },
+      {
+        "path": "russian-medical-academic-editor/checks.py",
+        "bytes": 58277,
+        "sha256": "e452be6d0877acb53e60720ea7aa547963769c3fa5aa2d5bd279c9794a264ee9"
+      },
+      {
+        "path": "russian-medical-academic-editor/references/decisions-and-examples.md",
+        "bytes": 13806,
+        "sha256": "e2477e932f83193a8ee98149086fdbac6e99f97d5c946b586cf2adcb5026e5b9"
+      },
+      {
+        "path": "russian-medical-academic-editor/references/medical-invariants.md",
+        "bytes": 8392,
+        "sha256": "d7d91cee68758d5d897bafe5577ab1a1364bb01650b40bbfecf840fd95f86919"
+      },
+      {
+        "path": "russian-medical-academic-editor/references/runtime-and-artifacts.md",
+        "bytes": 16039,
+        "sha256": "9ebc1b94ee96b1b5b8190becca6aa3bd988a00b5e50424b41b4d5c597ca1ddd2"
+      },
+      {
+        "path": "russian-medical-academic-editor/runtime/RMAE_R2_OFFLINE_RUNTIME.zip",
+        "bytes": 5479858,
+        "sha256": "f0d0bfba47026ea033ffdffdf76d4a4fe10946ec955ac616d4731e6d28693bf4"
+      },
+      {
+        "path": "russian-medical-academic-editor/runtime/bootstrap.py",
+        "bytes": 40919,
+        "sha256": "ac183982fa118036aead7781d51ea52ed43ce898837c05314641597ac3715faf"
+      }
+    ]
+  },
+  "logs_zip": {
+    "filename": "PRIMARY_AUTONOMOUS_BUILD_LOGS.zip",
+    "bytes": 410462,
+    "sha256": "cf4483cd0b14e973ab9c50c6326281ecdc780c17376bcf6679115c02c377f1ea"
+  },
+  "git": {
+    "head": "fef168622d9ffa1d7f8f9ebb241b6932659d62aa",
+    "porcelain": " M skills/russian-medical-academic-editor/SKILL.md\n M skills/russian-medical-academic-editor/references/runtime-and-artifacts.md\n",
+    "changed_tracked_files": [
+      "skills/russian-medical-academic-editor/SKILL.md",
+      "skills/russian-medical-academic-editor/references/runtime-and-artifacts.md"
+    ],
+    "commit_push_merge": "NOT_RUN"
+  },
+  "changes": [
+    {
+      "path": "skills/russian-medical-academic-editor/SKILL.md",
+      "policy": "RUNTIME_ONLY_EDIT",
+      "why": "Указано, что ревизия R2 Autonomous перед scan и validate запускает runtime/bootstrap.py из каталога установленного навыка. Убрано утверждение, что архив не содержит среду. Вызов из PATH заменён на source-run с абсолютными python и pythonpath. Locked-прогон оставлен только в блоке repo-only для рабочей копии без встроенного runtime."
+    },
+    {
+      "path": "skills/russian-medical-academic-editor/references/runtime-and-artifacts.md",
+      "policy": "RUNTIME_ONLY_EDIT",
+      "why": "Раздел подключения и примеры команд согласованы с SKILL.md: bootstrap, затем python -m aiw_ru, checks.py по абсолютному пути установленной копии. В эпикриз добавлены режим, хэш архива, версии и журнал. Пятый обязательный файл не вводится."
+    },
+    {
+      "path": "runtime/bootstrap.py",
+      "policy": "ADDED_IN_INSTALLABLE_ZIP_ONLY",
+      "why": "Локальный помощник стандартной библиотеки: проверяет встроенный архив до распаковки, создаёт свежую venv и ставит десять wheel офлайн. В каталог навыка репозитория не положен, потому что существующий тест перечисляет ровно семь исходных файлов, а эти тесты не переписывались."
+    },
+    {
+      "path": "runtime/RMAE_R2_OFFLINE_RUNTIME.zip",
+      "policy": "EMBEDDED_EXACT_BYTES",
+      "why": "Опубликованный архив коммита 87712f56, git blob de585288, вложен без перепаковки внутреннего ZIP."
+    }
+  ],
+  "builder": {
+    "scope": "local cold start of the built skill ZIP, not ChatGPT Work",
+    "system": "Linux",
+    "machine": "x86_64",
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "executable": "/usr/bin/python3",
+    "glibc": "2.39",
+    "uv": "uv 0.13.9 (x86_64-unknown-linux-gnu)",
+    "uv_path": "/tmp/rmae-host-uv/uv-x86_64-unknown-linux-gnu/uv",
+    "difference_from_verified_work": [
+      "CPython 3.12.3, на целевом Work была 3.12.14",
+      "glibc 2.39, на целевом Work была 2.41"
+    ],
+    "network_namespace": "NOT_AVAILABLE",
+    "offline_evidence": "uv pip install --offline --no-index --find-links завершился установкой 10 пакетов; в stderr нет Downloading"
+  },
+  "sessions": {
+    "A": {
+      "base": "/tmp/rmae-cold-a-9lht2tzx",
+      "cwd": "/tmp/rmae-cold-a-9lht2tzx/cwd",
+      "work_dir": "/tmp/rmae-r2-autonomous-u5q57a8u",
+      "python": "/tmp/rmae-r2-autonomous-u5q57a8u/venv/bin/python",
+      "pythonpath": "/tmp/rmae-r2-autonomous-u5q57a8u/source-bundle/source/src",
+      "checks_py": "/tmp/rmae-cold-a-9lht2tzx/unpack/russian-medical-academic-editor/checks.py",
+      "probe": {
+        "ok": true,
+        "words": 11,
+        "context_mode": "academic",
+        "validate_ok": true,
+        "coverage": "COVERED",
+        "bind_ok": true,
+        "protect_positive": "PASS",
+        "protect_negative": "FAIL",
+        "read_back": true,
+        "checks_sha256": "e452be6d0877acb53e60720ea7aa547963769c3fa5aa2d5bd279c9794a264ee9",
+        "source_unchanged": true,
+        "scan_exit": 0,
+        "validate_exit": 0
+      },
+      "dependencies": [
+        "annotated-types==0.8.0",
+        "markdown-it-py==4.2.0",
+        "mdurl==0.1.2",
+        "pydantic==2.13.5",
+        "pydantic-core==2.46.5",
+        "pygments==2.21.0",
+        "regex==2026.9.10",
+        "rich==15.0.0",
+        "typing-extensions==4.16.0",
+        "typing-inspection==0.4.4"
+      ]
+    },
+    "B": {
+      "base": "/tmp/rmae-cold-b-12gczgts",
+      "cwd": "/tmp/rmae-cold-b-12gczgts/cwd",
+      "work_dir": "/tmp/rmae-r2-autonomous-8hrdjuyu",
+      "python": "/tmp/rmae-r2-autonomous-8hrdjuyu/venv/bin/python",
+      "pythonpath": "/tmp/rmae-r2-autonomous-8hrdjuyu/source-bundle/source/src",
+      "checks_py": "/tmp/rmae-cold-b-12gczgts/unpack/russian-medical-academic-editor/checks.py",
+      "probe": {
+        "ok": true,
+        "words": 11,
+        "context_mode": "academic",
+        "validate_ok": true,
+        "coverage": "COVERED",
+        "bind_ok": true,
+        "protect_positive": "PASS",
+        "protect_negative": "FAIL",
+        "read_back": true,
+        "checks_sha256": "e452be6d0877acb53e60720ea7aa547963769c3fa5aa2d5bd279c9794a264ee9",
+        "source_unchanged": true,
+        "scan_exit": 0,
+        "validate_exit": 0
+      },
+      "dependencies": [
+        "annotated-types==0.8.0",
+        "markdown-it-py==4.2.0",
+        "mdurl==0.1.2",
+        "pydantic==2.13.5",
+        "pydantic-core==2.46.5",
+        "pygments==2.21.0",
+        "regex==2026.9.10",
+        "rich==15.0.0",
+        "typing-extensions==4.16.0",
+        "typing-inspection==0.4.4"
+      ]
+    }
+  },
+  "gates": {
+    "P01": {
+      "status": "PASS"
+    },
+    "P02": {
+      "status": "PASS"
+    },
+    "P03": {
+      "status": "PASS"
+    },
+    "P04": {
+      "status": "PASS"
+    },
+    "P05": {
+      "status": "PASS"
+    },
+    "P06": {
+      "status": "PASS"
+    },
+    "P07": {
+      "status": "PASS"
+    },
+    "P08": {
+      "status": "PASS"
+    },
+    "P09": {
+      "status": "PASS"
+    },
+    "P10": {
+      "status": "PASS",
+      "detail_keys": [
+        "corrupt",
+        "missing",
+        "pwned_created",
+        "status",
+        "structure_error",
+        "swapped"
+      ],
+      "cases": {
+        "missing": "BLOCKED",
+        "corrupt_exit": 1,
+        "swapped_exit": 1,
+        "structure_rejected": true
+      }
+    },
+    "P11": {
+      "status": "PASS",
+      "detail_keys": [
+        "incompatible_python_process",
+        "incompatible_python_reason",
+        "install_failure",
+        "network_namespace",
+        "network_namespace_reason",
+        "no_network_api",
+        "no_uv",
+        "offline_install",
+        "status",
+        "tampered_checks"
+      ],
+      "cases": {
+        "no_uv": "host_uv",
+        "install_failure_exit": 1,
+        "offline_install": true,
+        "incompatible_python_process": "NOT_RUN"
+      }
+    },
+    "P12": {
+      "status": "PASS",
+      "detail_keys": [
+        "live_field_checks",
+        "note",
+        "rejection_logic",
+        "status"
+      ]
+    },
+    "P13": {
+      "status": "PASS"
+    },
+    "P14": {
+      "status": "PASS",
+      "detail_keys": [
+        "full_exit",
+        "full_locked_suite",
+        "full_tail",
+        "lint",
+        "lint_tail",
+        "status",
+        "targeted_exit",
+        "targeted_ok",
+        "targeted_tail",
+        "typecheck",
+        "typecheck_tail"
+      ]
+    }
+  },
+  "P15": {
+    "status": "PASS",
+    "evidence": "файлы лежат в каталоге артефактов, SHA256SUMS проверен"
+  },
+  "W01": "NOT_RUN",
+  "W02": "NOT_RUN",
+  "W03": "NOT_RUN",
+  "W04": "NOT_RUN",
+  "W05": "NOT_RUN",
+  "E01": "PENDING",
+  "prior_work_source_run": {
+    "status": "WORK_SOURCE_RUN_PASS",
+    "scope": "ранее приложенное доказательство отдельного runtime, не этот автономный ZIP и не новый запуск Work"
+  },
+  "regression": {
+    "targeted_medical_and_skill_tests": "206 passed",
+    "full_locked_suite": "PASS",
+    "full_summary": "1537 passed, 44 skipped, 1 xfailed",
+    "ruff": "PASS",
+    "ty": "PASS",
+    "command": "uv run --locked --group dev --group train --offline pytest -q"
+  },
+  "commands_A": [
+    {
+      "name": "venv",
+      "exit_code": 0,
+      "argv": [
+        "/tmp/rmae-host-uv/uv-x86_64-unknown-linux-gnu/uv",
+        "venv",
+        "--offline",
+        "--python",
+        "/usr/bin/python3",
+        "/tmp/rmae-r2-autonomous-u5q57a8u/venv"
+      ]
+    },
+    {
+      "name": "install",
+      "exit_code": 0,
+      "argv": [
+        "/tmp/rmae-host-uv/uv-x86_64-unknown-linux-gnu/uv",
+        "pip",
+        "install",
+        "--offline",
+        "--no-index",
+        "--find-links",
+        "/tmp/rmae-r2-autonomous-u5q57a8u/runtime/wheelhouse",
+        "--python",
+        "/tmp/rmae-r2-autonomous-u5q57a8u/venv/bin/python",
+        "--require-hashes",
+        "--only-binary",
+        ":all:",
+        "-r",
+        "/tmp/rmae-r2-autonomous-u5q57a8u/source-bundle/requirements-runtime-lock.txt"
+      ]
+    },
+    {
+      "name": "pip_check",
+      "exit_code": 0,
+      "argv": [
+        "/tmp/rmae-host-uv/uv-x86_64-unknown-linux-gnu/uv",
+        "pip",
+        "check",
+        "--python",
+        "/tmp/rmae-r2-autonomous-u5q57a8u/venv/bin/python"
+      ]
+    },
+    {
+      "name": "provenance",
+      "exit_code": 0,
+      "argv": [
+        "/tmp/rmae-r2-autonomous-u5q57a8u/venv/bin/python",
+        "-c",
+        "\nimport importlib, importlib.metadata as meta, json, sys\nfrom pathlib import Path\nnames = json.loads(sys.argv[1])\nimport aiw_ru\nfound = {}\nfor dist, module in names.items():\n    mod = importlib.import_module(module)\n    found[dist] = {\"version\": meta.version(dist), \"module\": mod.__file__}\ninstalled = sorted(item.metadata[\"Name\"] for item in meta.distributions())\nprint(json.dumps({\n    \"python\": sys.version,\n    \"prefix\": sys.prefix,\n    \"aiw_ru_file\": aiw_ru.__file__,\n    \"distributions\": found,\n    \"installed_distributions\": installed,\n    \"path\": sys.path,\n}, ensure_ascii=False))\n",
+        "{\"annotated-types\": \"annotated_types\", \"markdown-it-py\": \"markdown_it\", \"mdurl\": \"mdurl\", \"pydantic\": \"pydantic\", \"pydantic-core\": \"pydantic_core\", \"pygments\": \"pygments\", \"regex\": \"regex\", \"rich\": \"rich\", \"typing-extensions\": \"typing_extensions\", \"typing-inspection\": \"typing_inspection\"}"
+      ]
+    },
+    {
+      "name": "cli_version",
+      "exit_code": 0,
+      "argv": [
+        "/tmp/rmae-r2-autonomous-u5q57a8u/venv/bin/python",
+        "-m",
+        "aiw_ru",
+        "--version"
+      ]
+    },
+    {
+      "name": "scan",
+      "exit_code": 0,
+      "argv": [
+        "/tmp/rmae-r2-autonomous-u5q57a8u/venv/bin/python",
+        "-m",
+        "aiw_ru",
+        "scan",
+        "/tmp/rmae-r2-autonomous-u5q57a8u/smoke/original.md",
+        "--context",
+        "vak",
+        "--no-model",
+        "--json"
+      ]
+    },
+    {
+      "name": "validate",
+      "exit_code": 0,
+      "argv": [
+        "/tmp/rmae-r2-autonomous-u5q57a8u/venv/bin/python",
+        "-m",
+        "aiw_ru",
+        "validate",
+        "/tmp/rmae-r2-autonomous-u5q57a8u/smoke/original.md",
+        "/tmp/rmae-r2-autonomous-u5q57a8u/smoke/copy.md",
+        "--context",
+        "vak",
+        "--json"
+      ]
+    },
+    {
+      "name": "coverage",
+      "exit_code": 0,
+      "argv": [
+        "/usr/bin/python3",
+        "/tmp/rmae-cold-a-9lht2tzx/unpack/russian-medical-academic-editor/checks.py",
+        "coverage",
+        "--source",
+        "/tmp/rmae-r2-autonomous-u5q57a8u/smoke/original.md",
+        "--scan-stdout",
+        "/tmp/rmae-cold-a-9lht2tzx/bootstrap-logs/scan.stdout",
+        "--exit-code",
+        "0"
+      ]
+    },
+    {
+      "name": "helper_sha256",
+      "exit_code": 0,
+      "argv": [
+        "/usr/bin/python3",
+        "/tmp/rmae-cold-a-9lht2tzx/unpack/russian-medical-academic-editor/checks.py",
+        "sha256",
+        "/tmp/rmae-r2-autonomous-u5q57a8u/smoke/original.md"
+      ]
+    },
+    {
+      "name": "read_back",
+      "exit_code": 0,
+      "argv": [
+        "/usr/bin/python3",
+        "/tmp/rmae-cold-a-9lht2tzx/unpack/russian-medical-academic-editor/checks.py",
+        "read-back",
+        "--file",
+        "/tmp/rmae-r2-autonomous-u5q57a8u/smoke/original.md",
+        "--sha256",
+        "77e792d058688aa31dcd739e7eafe6e8d443a0f69ec63ab87441bbcd3565181e"
+      ]
+    },
+    {
+      "name": "uv_version",
+      "exit_code": 0,
+      "argv": [
+        "/tmp/rmae-host-uv/uv-x86_64-unknown-linux-gnu/uv",
+        "--version"
+      ]
+    }
+  ],
+  "commands_B": [
+    {
+      "name": "venv",
+      "exit_code": 0,
+      "argv": [
+        "/tmp/rmae-host-uv/uv-x86_64-unknown-linux-gnu/uv",
+        "venv",
+        "--offline",
+        "--python",
+        "/usr/bin/python3",
+        "/tmp/rmae-r2-autonomous-8hrdjuyu/venv"
+      ]
+    },
+    {
+      "name": "install",
+      "exit_code": 0,
+      "argv": [
+        "/tmp/rmae-host-uv/uv-x86_64-unknown-linux-gnu/uv",
+        "pip",
+        "install",
+        "--offline",
+        "--no-index",
+        "--find-links",
+        "/tmp/rmae-r2-autonomous-8hrdjuyu/runtime/wheelhouse",
+        "--python",
+        "/tmp/rmae-r2-autonomous-8hrdjuyu/venv/bin/python",
+        "--require-hashes",
+        "--only-binary",
+        ":all:",
+        "-r",
+        "/tmp/rmae-r2-autonomous-8hrdjuyu/source-bundle/requirements-runtime-lock.txt"
+      ]
+    },
+    {
+      "name": "pip_check",
+      "exit_code": 0,
+      "argv": [
+        "/tmp/rmae-host-uv/uv-x86_64-unknown-linux-gnu/uv",
+        "pip",
+        "check",
+        "--python",
+        "/tmp/rmae-r2-autonomous-8hrdjuyu/venv/bin/python"
+      ]
+    },
+    {
+      "name": "provenance",
+      "exit_code": 0,
+      "argv": [
+        "/tmp/rmae-r2-autonomous-8hrdjuyu/venv/bin/python",
+        "-c",
+        "\nimport importlib, importlib.metadata as meta, json, sys\nfrom pathlib import Path\nnames = json.loads(sys.argv[1])\nimport aiw_ru\nfound = {}\nfor dist, module in names.items():\n    mod = importlib.import_module(module)\n    found[dist] = {\"version\": meta.version(dist), \"module\": mod.__file__}\ninstalled = sorted(item.metadata[\"Name\"] for item in meta.distributions())\nprint(json.dumps({\n    \"python\": sys.version,\n    \"prefix\": sys.prefix,\n    \"aiw_ru_file\": aiw_ru.__file__,\n    \"distributions\": found,\n    \"installed_distributions\": installed,\n    \"path\": sys.path,\n}, ensure_ascii=False))\n",
+        "{\"annotated-types\": \"annotated_types\", \"markdown-it-py\": \"markdown_it\", \"mdurl\": \"mdurl\", \"pydantic\": \"pydantic\", \"pydantic-core\": \"pydantic_core\", \"pygments\": \"pygments\", \"regex\": \"regex\", \"rich\": \"rich\", \"typing-extensions\": \"typing_extensions\", \"typing-inspection\": \"typing_inspection\"}"
+      ]
+    },
+    {
+      "name": "cli_version",
+      "exit_code": 0,
+      "argv": [
+        "/tmp/rmae-r2-autonomous-8hrdjuyu/venv/bin/python",
+        "-m",
+        "aiw_ru",
+        "--version"
+      ]
+    },
+    {
+      "name": "scan",
+      "exit_code": 0,
+      "argv": [
+        "/tmp/rmae-r2-autonomous-8hrdjuyu/venv/bin/python",
+        "-m",
+        "aiw_ru",
+        "scan",
+        "/tmp/rmae-r2-autonomous-8hrdjuyu/smoke/original.md",
+        "--context",
+        "vak",
+        "--no-model",
+        "--json"
+      ]
+    },
+    {
+      "name": "validate",
+      "exit_code": 0,
+      "argv": [
+        "/tmp/rmae-r2-autonomous-8hrdjuyu/venv/bin/python",
+        "-m",
+        "aiw_ru",
+        "validate",
+        "/tmp/rmae-r2-autonomous-8hrdjuyu/smoke/original.md",
+        "/tmp/rmae-r2-autonomous-8hrdjuyu/smoke/copy.md",
+        "--context",
+        "vak",
+        "--json"
+      ]
+    },
+    {
+      "name": "coverage",
+      "exit_code": 0,
+      "argv": [
+        "/usr/bin/python3",
+        "/tmp/rmae-cold-b-12gczgts/unpack/russian-medical-academic-editor/checks.py",
+        "coverage",
+        "--source",
+        "/tmp/rmae-r2-autonomous-8hrdjuyu/smoke/original.md",
+        "--scan-stdout",
+        "/tmp/rmae-cold-b-12gczgts/bootstrap-logs/scan.stdout",
+        "--exit-code",
+        "0"
+      ]
+    },
+    {
+      "name": "helper_sha256",
+      "exit_code": 0,
+      "argv": [
+        "/usr/bin/python3",
+        "/tmp/rmae-cold-b-12gczgts/unpack/russian-medical-academic-editor/checks.py",
+        "sha256",
+        "/tmp/rmae-r2-autonomous-8hrdjuyu/smoke/original.md"
+      ]
+    },
+    {
+      "name": "read_back",
+      "exit_code": 0,
+      "argv": [
+        "/usr/bin/python3",
+        "/tmp/rmae-cold-b-12gczgts/unpack/russian-medical-academic-editor/checks.py",
+        "read-back",
+        "--file",
+        "/tmp/rmae-r2-autonomous-8hrdjuyu/smoke/original.md",
+        "--sha256",
+        "77e792d058688aa31dcd739e7eafe6e8d443a0f69ec63ab87441bbcd3565181e"
+      ]
+    },
+    {
+      "name": "uv_version",
+      "exit_code": 0,
+      "argv": [
+        "/tmp/rmae-host-uv/uv-x86_64-unknown-linux-gnu/uv",
+        "--version"
+      ]
+    }
+  ],
+  "confirmation_cold_start": {
+    "status": "RUNTIME_READY",
+    "cli": "aiw-ru 0.0.0",
+    "coverage": "COVERED",
+    "runtime_sha256": "f0d0bfba47026ea033ffdffdf76d4a4fe10946ec955ac616d4731e6d28693bf4",
+    "note": "Перед публикацией bootstrap.py приведён к длине строки 120 и формату ruff. Повторный холодный запуск этого ZIP дал RUNTIME_READY. Полная матрица в журналах сделана на предыдущей сборке с тем же runtime; отличие только в переносах строк помощника."
+  }
+}
