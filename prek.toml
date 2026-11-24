@@ -12,7 +12,8 @@
 repo = "https://github.com/pre-commit/pre-commit-hooks"
 rev = "v6.0.0"
 hooks = [
-  { id = "check-added-large-files", args = ["--maxkb=512"], priority = 0, fail_fast = true },
+  # Архив автономной среды больше 512 КБ и меньше лимита GitHub; остальные файлы лимит не обходят.
+  { id = "check-added-large-files", args = ["--maxkb=512"], exclude = "^delivery/rmae-r2-offline-runtime/RMAE_R2_OFFLINE_RUNTIME\\.zip$", priority = 0, fail_fast = true },
   { id = "detect-private-key", priority = 0, fail_fast = true },
   { id = "check-merge-conflict", priority = 0 },
   { id = "check-case-conflict", priority = 0 },
@@ -68,6 +69,8 @@ hooks = [
     entry = "uv run --group dev ruff check --fix",
     language = "system",
     types = ["python"],
+    # Скрипты поставки хранят байты handoff; форматтер их не переписывает.
+    exclude = "^delivery/rmae-r2-offline-runtime/",
     priority = 20,
   },
   # Формат после линтера: оба переписывают файлы, в одном приоритете они шли бы параллельно.
@@ -77,6 +80,7 @@ hooks = [
     entry = "uv run --group dev ruff format",
     language = "system",
     types = ["python"],
+    exclude = "^delivery/rmae-r2-offline-runtime/",
     priority = 21,
   },
   {

@@ -1,0 +1,343 @@
+{
+  "stage": "RMAE_R2_OFFLINE_RUNTIME_BUILD",
+  "generated_at_utc": "2026-11-24T13:26:23.785603+00:00",
+  "generated_at_europe_moscow": "2026-11-24T16:26:23.785603+03:00",
+  "commit": "fef168622d9ffa1d7f8f9ebb241b6932659d62aa",
+  "project_version": "2.10.1",
+  "source_archive": "RMAE_R2_CLI_RUNTIME_BUNDLE.zip",
+  "source_archive_sha256": "3718219490c52357e6bf9bb2564cd46dbf9252b7b9844ad6122f2d2393b232bb",
+  "source_archive_bytes": 466338,
+  "handoff_zip": {
+    "filename": "RMAE_R2_OFFLINE_CURSOR_HANDOFF_2026-11-24_7832.zip",
+    "sha256": "66e46b6b2b90af0d3b8b75f265080ae09a414f0064620f097984355ad660087d",
+    "bytes": 527229,
+    "sha256sums": "PASS",
+    "crc": "PASS"
+  },
+  "host": {
+    "platform": "Linux-6.12.113+-x86_64-with-glibc2.39",
+    "machine": "x86_64",
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "python_path": "/usr/bin/python3",
+    "glibc": "ldd (Ubuntu GLIBC 2.39-0ubuntu8.9) 2.39",
+    "uv": "0.13.9 (x86_64-unknown-linux-gnu)",
+    "uv_path": "/tmp/rmae-build/tools/uv-bin/uv",
+    "uv_preinstalled": false,
+    "uv_tarball_sha256": "a7fbaff2b9a271d85c1bdb540941090fd1ce011797b4abeb48e4dcd39c2471d5",
+    "repo_branch": "build/rmae-r2-offline-runtime",
+    "repo_head": "fef168622d9ffa1d7f8f9ebb241b6932659d62aa",
+    "repo_status_after": "",
+    "work_target": "CPython 3.12.14, Linux x86_64, glibc 2.41, uv 0.13.9",
+    "host_matches_work_target": false
+  },
+  "input_checks": {
+    "handoff_sha256sums": "PASS",
+    "builder_sha256sums": "PASS",
+    "zip_crc": "PASS",
+    "builder_plan_exit": 0,
+    "verify_inputs_status": "INPUTS_VERIFIED",
+    "source_files_vs_git": {
+      "files": 45,
+      "mismatches": 0
+    },
+    "local_wheel_cache_before_download": 0,
+    "lock_closure_checked_by": "verify_runtime.py --inputs"
+  },
+  "wheels": [
+    {
+      "name": "annotated-types",
+      "filename": "annotated_types-0.8.0-py3-none-any.whl",
+      "version": "0.8.0",
+      "url": "https://files.pythonhosted.org/packages/99/91/8acff4f5e50511b911bbccb72b8628a49c68ce14148cd9f6431094859a90/annotated_types-0.8.0-py3-none-any.whl",
+      "expected_sha256": "f072f4d804ea359e4eaf198b1af7a8b0943881a87f31bb764f8bf219bb9419e0",
+      "actual_sha256": "f072f4d804ea359e4eaf198b1af7a8b0943881a87f31bb764f8bf219bb9419e0",
+      "expected_bytes": 13427,
+      "actual_bytes": 13427,
+      "provenance": "download",
+      "http_status_refetch": 200,
+      "metadata_name": "annotated-types",
+      "metadata_version": "0.8.0",
+      "requires_python": ">=3.10",
+      "tags": [
+        "py3-none-any"
+      ],
+      "shared_objects": [],
+      "record_mismatches": [],
+      "zip_crc": null
+    },
+    {
+      "name": "markdown-it-py",
+      "filename": "markdown_it_py-4.2.0-py3-none-any.whl",
+      "version": "4.2.0",
+      "url": "https://files.pythonhosted.org/packages/b3/81/4da04ced5a082363ecfa159c010d200ecbd959ae410c10c0264a38cac0f5/markdown_it_py-4.2.0-py3-none-any.whl",
+      "expected_sha256": "9f7ebbcd14fe59494226453aed97c1070d83f8d24b6fc3a3bcf9a38092641c4a",
+      "actual_sha256": "9f7ebbcd14fe59494226453aed97c1070d83f8d24b6fc3a3bcf9a38092641c4a",
+      "expected_bytes": 91687,
+      "actual_bytes": 91687,
+      "provenance": "download",
+      "http_status_refetch": 200,
+      "metadata_name": "markdown-it-py",
+      "metadata_version": "4.2.0",
+      "requires_python": ">=3.10",
+      "tags": [
+        "py3-none-any"
+      ],
+      "shared_objects": [],
+      "record_mismatches": [],
+      "zip_crc": null
+    },
+    {
+      "name": "mdurl",
+      "filename": "mdurl-0.1.2-py3-none-any.whl",
+      "version": "0.1.2",
+      "url": "https://files.pythonhosted.org/packages/b3/38/89ba8ad64ae25be8de66a6d463314cf1eb366222074cfda9ee839c56a4b4/mdurl-0.1.2-py3-none-any.whl",
+      "expected_sha256": "84008a41e51615a49fc9966191ff91509e3c40b939176e643fd50a5c2196b8f8",
+      "actual_sha256": "84008a41e51615a49fc9966191ff91509e3c40b939176e643fd50a5c2196b8f8",
+      "expected_bytes": 9979,
+      "actual_bytes": 9979,
+      "provenance": "download",
+      "http_status_refetch": 200,
+      "metadata_name": "mdurl",
+      "metadata_version": "0.1.2",
+      "requires_python": ">=3.7",
+      "tags": [
+        "py3-none-any"
+      ],
+      "shared_objects": [],
+      "record_mismatches": [],
+      "zip_crc": null
+    },
+    {
+      "name": "pydantic",
+      "filename": "pydantic-2.13.5-py3-none-any.whl",
+      "version": "2.13.5",
+      "url": "https://files.pythonhosted.org/packages/eb/47/c95ffc2009878c7aac0c5e08528022dcb885933252a88b5f170058014464/pydantic-2.13.5-py3-none-any.whl",
+      "expected_sha256": "346a034f080da3755d8e9cb5e00e8b07de1d39e4f6e2c87d8ab7cafa0b269a73",
+      "actual_sha256": "346a034f080da3755d8e9cb5e00e8b07de1d39e4f6e2c87d8ab7cafa0b269a73",
+      "expected_bytes": 472589,
+      "actual_bytes": 472589,
+      "provenance": "download",
+      "http_status_refetch": 200,
+      "metadata_name": "pydantic",
+      "metadata_version": "2.13.5",
+      "requires_python": ">=3.9",
+      "tags": [
+        "py3-none-any"
+      ],
+      "shared_objects": [],
+      "record_mismatches": [],
+      "zip_crc": null
+    },
+    {
+      "name": "pydantic-core",
+      "filename": "pydantic_core-2.46.5-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+      "version": "2.46.5",
+      "url": "https://files.pythonhosted.org/packages/c0/a4/eb9409ec0736e50aa70a412f16c204ed149516846912f7e6724d4c73ee53/pydantic_core-2.46.5-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+      "expected_sha256": "0fc5be0abd4a407e200d844b404e33639a554e7bd0d448e7b9ae181be4789ac2",
+      "actual_sha256": "0fc5be0abd4a407e200d844b404e33639a554e7bd0d448e7b9ae181be4789ac2",
+      "expected_bytes": 2066284,
+      "actual_bytes": 2066284,
+      "provenance": "download",
+      "http_status_refetch": 200,
+      "metadata_name": "pydantic_core",
+      "metadata_version": "2.46.5",
+      "requires_python": ">=3.9",
+      "tags": [
+        "cp312-cp312-manylinux_2_17_x86_64",
+        "cp312-cp312-manylinux2014_x86_64"
+      ],
+      "shared_objects": [
+        "pydantic_core/_pydantic_core.cpython-312-x86_64-linux-gnu.so"
+      ],
+      "record_mismatches": [],
+      "zip_crc": null
+    },
+    {
+      "name": "pygments",
+      "filename": "pygments-2.21.0-py3-none-any.whl",
+      "version": "2.21.0",
+      "url": "https://files.pythonhosted.org/packages/71/46/17f022dd3e953bf20a04a028a21ec746d942f8d2af30fa0f124fa0e6a684/pygments-2.21.0-py3-none-any.whl",
+      "expected_sha256": "2363c69b61c4a97c838da3b130dcd6468f4848992b21a82f2a63ec34377137d9",
+      "actual_sha256": "2363c69b61c4a97c838da3b130dcd6468f4848992b21a82f2a63ec34377137d9",
+      "expected_bytes": 1250147,
+      "actual_bytes": 1250147,
+      "provenance": "download",
+      "http_status_refetch": 200,
+      "metadata_name": "Pygments",
+      "metadata_version": "2.21.0",
+      "requires_python": ">=3.9",
+      "tags": [
+        "py3-none-any"
+      ],
+      "shared_objects": [],
+      "record_mismatches": [],
+      "zip_crc": null
+    },
+    {
+      "name": "regex",
+      "filename": "regex-2026.9.10-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl",
+      "version": "2026.9.10",
+      "url": "https://files.pythonhosted.org/packages/cb/f5/dcdf5e0d898024005cfcce631e3e934d111dfbe177ca0b7f253ae8a735a2/regex-2026.9.10-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl",
+      "expected_sha256": "2e67f8843f0e4b931f1fa860bf3bbe4134b714c0155cc5c7c0d7ea450230aae0",
+      "actual_sha256": "2e67f8843f0e4b931f1fa860bf3bbe4134b714c0155cc5c7c0d7ea450230aae0",
+      "expected_bytes": 804587,
+      "actual_bytes": 804587,
+      "provenance": "download",
+      "http_status_refetch": 200,
+      "metadata_name": "regex",
+      "metadata_version": "2026.9.10",
+      "requires_python": ">=3.10",
+      "tags": [
+        "cp312-cp312-manylinux_2_17_x86_64",
+        "cp312-cp312-manylinux2014_x86_64",
+        "cp312-cp312-manylinux_2_28_x86_64"
+      ],
+      "shared_objects": [
+        "regex/_regex.cpython-312-x86_64-linux-gnu.so"
+      ],
+      "record_mismatches": [],
+      "zip_crc": null
+    },
+    {
+      "name": "rich",
+      "filename": "rich-15.0.0-py3-none-any.whl",
+      "version": "15.0.0",
+      "url": "https://files.pythonhosted.org/packages/82/3b/64d4899d73f91ba49a8c18a8ff3f0ea8f1c1d75481760df8c68ef5235bf5/rich-15.0.0-py3-none-any.whl",
+      "expected_sha256": "33bd4ef74232fb73fe9279a257718407f169c09b78a87ad3d296f548e27de0bb",
+      "actual_sha256": "33bd4ef74232fb73fe9279a257718407f169c09b78a87ad3d296f548e27de0bb",
+      "expected_bytes": 310654,
+      "actual_bytes": 310654,
+      "provenance": "download",
+      "http_status_refetch": 200,
+      "metadata_name": "rich",
+      "metadata_version": "15.0.0",
+      "requires_python": ">=3.9.0",
+      "tags": [
+        "py3-none-any"
+      ],
+      "shared_objects": [],
+      "record_mismatches": [],
+      "zip_crc": null
+    },
+    {
+      "name": "typing-extensions",
+      "filename": "typing_extensions-4.16.0-py3-none-any.whl",
+      "version": "4.16.0",
+      "url": "https://files.pythonhosted.org/packages/49/d3/b8441a820a491ddfc024b0b0cf0393375b75ea13866d9c66727e54c2fc80/typing_extensions-4.16.0-py3-none-any.whl",
+      "expected_sha256": "481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8",
+      "actual_sha256": "481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8",
+      "expected_bytes": 45571,
+      "actual_bytes": 45571,
+      "provenance": "download",
+      "http_status_refetch": 200,
+      "metadata_name": "typing_extensions",
+      "metadata_version": "4.16.0",
+      "requires_python": ">=3.9",
+      "tags": [
+        "py3-none-any"
+      ],
+      "shared_objects": [],
+      "record_mismatches": [],
+      "zip_crc": null
+    },
+    {
+      "name": "typing-inspection",
+      "filename": "typing_inspection-0.4.4-py3-none-any.whl",
+      "version": "0.4.4",
+      "url": "https://files.pythonhosted.org/packages/67/81/4add07e5172b7ac40d8ed5ff580409a7801a4fe26d529bdd915401dabfbe/typing_inspection-0.4.4-py3-none-any.whl",
+      "expected_sha256": "65b8397ba37ccbce054456aaccddfc91e6e3083c92824df348d96ca832f3f147",
+      "actual_sha256": "65b8397ba37ccbce054456aaccddfc91e6e3083c92824df348d96ca832f3f147",
+      "expected_bytes": 14750,
+      "actual_bytes": 14750,
+      "provenance": "download",
+      "http_status_refetch": 200,
+      "metadata_name": "typing-inspection",
+      "metadata_version": "0.4.4",
+      "requires_python": ">=3.10",
+      "tags": [
+        "py3-none-any"
+      ],
+      "shared_objects": [],
+      "record_mismatches": [],
+      "zip_crc": null
+    }
+  ],
+  "acceptance": {
+    "B01": "PASS",
+    "B02": "PASS",
+    "B03": "PASS",
+    "B04": "PASS",
+    "B05": "PASS",
+    "B06": "PASS",
+    "B07": "PASS",
+    "B08": "PASS",
+    "S01": "PASS",
+    "S02": "PASS",
+    "S03": "PASS",
+    "S04": "PASS",
+    "S05": "PASS",
+    "S06": "PASS",
+    "S07": "PASS",
+    "S08": "PASS"
+  },
+  "acceptance_evidence": {
+    "B01": "sha256sum -c of the handoff and builder manifests, exit 0; ZipFile.testzip of the handoff, source bundle, and prior logs returned None.",
+    "B02": "45/45 source files matched size, SHA-256, and git hash-object against checkout fef168622d9ffa1d7f8f9ebb241b6932659d62aa. Inner archive SHA-256 3718219490c52357e6bf9bb2564cd46dbf9252b7b9844ad6122f2d2393b232bb.",
+    "B03": "verify_runtime.py --inputs returned INPUTS_VERIFIED: 10 lock URLs, versions, sizes, and requirement hashes.",
+    "B04": "prepare_offline_bundle.py without --cache printed VERIFIED for 10 wheels. A second GET of each files.pythonhosted.org URL returned HTTP 200 and the same SHA-256. No matching wheel was in the local cache before download.",
+    "B05": "Each wheel CRC was clean. METADATA name/version and WHEEL tags matched the manifest. RECORD hashes matched. Two cp312 manylinux x86_64 wheels contain one .so each; eight wheels are py3-none-any.",
+    "B06": "verify_runtime.py --archive returned OFFLINE_BUNDLE_READY, 13 manifest entries, 10 wheels, archive SHA-256 f0d0bfba47026ea033ffdffdf76d4a4fe10946ec955ac616d4731e6d28693bf4, 5479858 bytes. Source member and 00_READ_FIRST.md are byte-identical to the builder inputs.",
+    "B07": "git status --porcelain was empty before and after. Builder SHA256SUMS remained OK. Extracted source SHA256SUMS was 50/50 OK after the smoke. No commit, push, merge, or publication.",
+    "B08": "The runtime ZIP, BUILD_REPORT.json, and PRIMARY_BUILD_LOGS.zip are copied to /opt/cursor/artifacts and rehashed after the copy.",
+    "S01": "Builder host is Linux x86_64, CPython 3.12.3 at /usr/bin/python3, glibc 2.39, uv 0.13.9. This meets the smoke rule Python 3.12 / glibc >= 2.17 / uv. It is not the Work host CPython 3.12.14 / glibc 2.41.",
+    "S02": "New uv venv, include-system-site-packages = false, UV_CACHE_DIR empty before install. uv pip install --offline --no-index --find-links --require-hashes --only-binary :all: ran inside unshare --net and installed 10 packages, exit 0. uv pip check: all compatible.",
+    "S03": "importlib.metadata versions matched all 10 pins. All ten modules resolved inside the venv. aiw_ru.__file__ is runtime/source/src/aiw_ru/__init__.py. Distributions found: 10.",
+    "S04": "scan exit 0, stats.words=11, stats.contextMode=academic, classifier absent. coverage disposition=COVERED, full_range_acceptance=true.",
+    "S05": "validate exit 0, ok=true, warnings=[], violations=[], swappedNumbers=[].",
+    "S06": "Helper SHA-256 matched sha256sum. bind ok=true frozen=true. protect of the exact copy returned PASS. protect after replacing 48 пациентов with 49 пациентов returned FAIL. read-back matches=true. Helper origin is the extracted bundle source, not an installed skill.",
+    "S07": "Outer ZIP, inner ZIP, uv.lock, requirements, and five skill files had the same SHA-256 before and after. The synthetic original still equals the specified phrase.",
+    "S08": "logs/*.meta.json, stdout, stderr, and exit records exist for the builder, verifier, smoke, and final checks."
+  },
+  "bundle_status": "OFFLINE_BUNDLE_READY",
+  "builder_smoke_status": "BUILDER_SOURCE_RUN_PASS",
+  "work_runtime_status": "PENDING",
+  "cli_install_status": "NOT_RUN",
+  "locked_project_status": "NOT_RUN",
+  "scientific_acceptance": false,
+  "cli_reported_version": "0.0.0",
+  "cli_invocation": "PYTHONPATH=runtime/source/src env/bin/python -m aiw_ru",
+  "helper_origin": "/tmp/rmae-build/smoke/unpacked/runtime/source/skills/russian-medical-academic-editor",
+  "installed_skill_checked": false,
+  "network_namespace_for_smoke": true,
+  "uv_cache_entries_after_offline_install": 802,
+  "supplied_work_audit": {
+    "status": "BLOCKED",
+    "reason": "Ten required wheels were absent from the Work cache. Offline uv sync failed on typing-inspection 0.4.4. Offline hashed install failed on annotated-types 0.8.0. scan and validate were not run there.",
+    "this_build_does_not_replace_work": true
+  },
+  "final_zip": {
+    "filename": "RMAE_R2_OFFLINE_RUNTIME.zip",
+    "sha256": "f0d0bfba47026ea033ffdffdf76d4a4fe10946ec955ac616d4731e6d28693bf4",
+    "bytes": 5479858,
+    "build_path": "/tmp/rmae-build/out/RMAE_R2_OFFLINE_RUNTIME.zip",
+    "delivery_path": "/opt/cursor/artifacts/RMAE_R2_OFFLINE_RUNTIME.zip"
+  },
+  "logs_zip": {
+    "filename": "PRIMARY_BUILD_LOGS.zip",
+    "sha256": "1ae2718083fa17834126833ce91c9881141ff494731e10af8f8b029640b49992",
+    "bytes": 55619,
+    "delivery_path": "/opt/cursor/artifacts/PRIMARY_BUILD_LOGS.zip"
+  },
+  "publication": {
+    "commit": false,
+    "push": false,
+    "merge": false,
+    "release": false
+  },
+  "notes": [
+    "Log 42_final_gates repeated the builder SHA256SUMS because that shell stayed in the builder directory. Log 43_source_sums_after checked the extracted source tree: 50/50 OK.",
+    "uv 0.13.9 was installed under /tmp for this smoke because the image had no uv. The project checkout was not modified.",
+    "The offline install ran with an empty cache inside a network namespace. DNS from that namespace failed before the install. uv later wrote local wheel artifacts into the new cache.",
+    "aiw-ru --version printed 0.0.0 because the package was imported from src without installed distribution metadata. That is a source-run, not CLI_INSTALL_PASS."
+  ]
+}
