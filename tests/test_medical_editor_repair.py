@@ -120,19 +120,24 @@ def _delivery(
     else:
         validation = None
     protected = None if specs is None else CHECKS.compare_protected(source, candidate, specs)
-    screen = CHECKS.screen_invariants(source, candidate)
-    delivery = CHECKS.decide_delivery(
+    ignored: list[str] = []
+    if edit_allowed:
+        ignored.append("edit_allowed")
+    if warnings_resolved is not None:
+        ignored.append("warnings_resolved")
+    if review is not None and "source_sha256" not in review:
+        ignored.append("semantic_review")
+    file_checks = CHECKS.aggregate_file_checks(
         source,
         candidate,
         coverage,
         protected=protected,
         validation=validation,
-        screen=screen,
-        edit_allowed=edit_allowed,
-        semantic_review=review,
+        review=review,
+        scan=scan,
         protected_required=protected_required,
-        warnings_resolved=warnings_resolved,
         mock=mock_scan is not None or mock_validate is not None,
+        ignored_inputs=ignored,
     )
     return {
         "scan_exit": scan_exit,
@@ -140,12 +145,11 @@ def _delivery(
         "coverage": coverage,
         "validation": validation,
         "protected": protected,
-        "screen": screen,
-        "delivery": delivery,
+        "file_checks": file_checks,
     }
 
 
-STYLE = {
+LEGACY_DECLARATION = {
     "style_only": True,
     "note": "снята пустая вводная, клинические токены сверены",
     "invariants_checked": ["числа", "диагноз", "дизайн"],
@@ -154,10 +158,24 @@ STYLE = {
 
 
 def test_helper_uses_stdlib_only() -> None:
-    """помощник не импортирует детектор и сторонние пакеты"""
+    """помощник не импортирует детектор и сторонние пакеты и не классифицирует смысл"""
     text = (SKILL_DIR / "checks.py").read_text(encoding="utf-8")
     assert "aiw_ru" not in text
     assert "import pydantic" not in text and "import regex" not in text
+    for token in (
+        "screen_invariants",
+        "STYLE_ALLOW",
+        "style_only_delta",
+        "_lemma",
+        "_review_covers",
+        "semantic_equivalent",
+        "APPLIED_AND_VERIFIED",
+        "decide_delivery",
+        "read_text",
+    ):
+        assert token not in text, token
+    with pytest.raises(SystemExit):
+        CHECKS.main(["screen", "--source", "a", "--candidate", "b"])
 
 
 def test_marker_ranges_match_detector() -> None:
@@ -189,8 +207,9 @@ def test_empty_and_whitespace_are_blocked(tmp_path: Path, capsys: pytest.Capture
         assert result["scan"]["words"] == 0
         assert result["coverage"]["false_clean"] is True
         assert result["coverage"]["full_range_acceptance"] is False
-        assert result["delivery"]["delivery_status"] == "BLOCKED"
-        assert result["delivery"]["full_pass"] is False
+        assert result["file_checks"]["file_status"] == "BLOCKED"
+        assert result["file_checks"]["full_range_file_pass"] is False
+        assert result["file_checks"]["scientific_acceptance"] is False
         assert source.encode("utf-8") == before
 
 
@@ -207,8 +226,9 @@ def test_fully_ignored_prose_is_blocked(tmp_path: Path, capsys: pytest.CaptureFi
     assert result["scan"]["ignored_regions"] == 1
     assert result["coverage"]["exclusions"]
     assert "aiw-ru" in result["coverage"]["exclusions"][0]["family"]
-    assert result["delivery"]["full_pass"] is False
-    assert result["delivery"]["delivery_status"] == "BLOCKED"
+    assert result["file_checks"]["full_range_file_pass"] is False
+    assert result["file_checks"]["file_status"] == "BLOCKED"
+    assert result["file_checks"]["scientific_acceptance"] is False
     assert "<!-- aiw-ru:ignore-start -->" in source
 
 
@@ -223,15 +243,18 @@ def test_partial_ignore_limits_scope(tmp_path: Path, capsys: pytest.CaptureFixtu
     blocked = _delivery(source, source, tmp_path, capsys)
     assert blocked["scan"]["words"] == 5
     assert blocked["scan"]["ignored_regions"] == 1
-    assert blocked["delivery"]["delivery_status"] == "BLOCKED"
-    assert blocked["delivery"]["full_pass"] is False
+    assert blocked["file_checks"]["file_status"] == "BLOCKED"
+    assert blocked["file_checks"]["full_range_file_pass"] is False
     span = (blocked["coverage"]["exclusions"][0]["start"], blocked["coverage"]["exclusions"][0]["end"])
     limited = _delivery(source, source, tmp_path, capsys, scope="limited", justified=[span])
     assert limited["coverage"]["full_range_acceptance"] is False
     assert limited["coverage"]["limited_scope_acceptance"] is True
-    assert limited["delivery"]["delivery_status"] == "NO_EDIT_NEEDED"
-    assert limited["delivery"]["full_pass"] is False
-    assert limited["delivery"]["result_scope"] == "limited"
+    assert limited["file_checks"]["file_status"] == "FILE_CHECKS_PASS"
+    assert limited["file_checks"]["full_range_file_pass"] is False
+    assert limited["file_checks"]["result_scope"] == "limited"
+    assert limited["file_checks"]["text_changed"] is False
+    assert limited["file_checks"]["scientific_acceptance"] is False
+    assert "NO_EDIT_NEEDED" not in json.dumps(limited["file_checks"])
 
 
 def test_unclosed_nested_and_ordinary_markup(tmp_path: Path, capsys: pytest.CaptureFixture[str], quiet: None) -> None:
@@ -244,7 +267,7 @@ def test_unclosed_nested_and_ordinary_markup(tmp_path: Path, capsys: pytest.Capt
     result = _delivery(unclosed, unclosed, tmp_path, capsys)
     assert result["coverage"]["unclosed"] is True
     assert result["coverage"]["exclusions"][0]["family"] == "avoid-ai-writing"
-    assert result["delivery"]["full_pass"] is False
+    assert result["file_checks"]["full_range_file_pass"] is False
     nested = (
         "В исследование включили 48 пациентов.\n"
         "<!-- aiw-ru:ignore-start -->\nОписание одного блока.\n"
@@ -256,17 +279,20 @@ def test_unclosed_nested_and_ordinary_markup(tmp_path: Path, capsys: pytest.Capt
     assert nested_result["coverage"]["nested"] is True
     assert len(nested_result["coverage"]["exclusions"]) == 1
     assert nested_result["scan"]["words"] > 0
-    assert nested_result["delivery"]["full_pass"] is False
+    assert nested_result["file_checks"]["full_range_file_pass"] is False
     fenced = "В исследование включили 48 пациентов.\n\n```text\n<!-- aiw-ru:ignore-start -->\nпример\n<!-- aiw-ru:ignore-end -->\n```\n"
     fenced_result = _delivery(fenced, fenced, tmp_path, capsys)
     assert fenced_result["coverage"]["exclusions"] == []
     assert fenced_result["coverage"]["full_range_acceptance"] is True
-    assert fenced_result["delivery"]["delivery_status"] == "NO_EDIT_NEEDED"
+    assert fenced_result["file_checks"]["file_status"] == "FILE_CHECKS_PASS"
+    assert fenced_result["file_checks"]["full_range_file_pass"] is True
+    assert fenced_result["file_checks"]["semantic_review_required"] is False
     code_only = "```text\nтолько код без прозы\n```\n"
     code_result = _delivery(code_only, code_only, tmp_path, capsys)
     assert code_result["coverage"]["global_blocked"] is False
-    assert code_result["delivery"]["delivery_status"] == "DETECT_ONLY"
-    assert code_result["delivery"]["full_pass"] is False
+    assert code_result["file_checks"]["file_status"] == "FILE_CHECKS_PASS"
+    assert code_result["file_checks"]["result_scope"] == "structural"
+    assert code_result["file_checks"]["full_range_file_pass"] is False
 
 
 def test_schema_rejects_empty_object_and_wrong_types() -> None:
@@ -316,10 +342,11 @@ def test_mock_schema_cannot_pass_gate() -> None:
     source = "В исследование включили 48 пациентов."
     scan = CHECKS.inspect_scan("{}", 0, mock=True)
     coverage = CHECKS.coverage_decision(source, scan)
-    delivery = CHECKS.decide_delivery(source, source, coverage, mock=True)
-    assert delivery["mock"] is True
-    assert delivery["delivery_status"] == "BLOCKED"
-    assert delivery["full_pass"] is False
+    file_checks = CHECKS.aggregate_file_checks(source, source, coverage, mock=True)
+    assert file_checks["mock"] is True
+    assert file_checks["file_status"] == "BLOCKED"
+    assert file_checks["full_range_file_pass"] is False
+    assert file_checks["scientific_acceptance"] is False
 
 
 def test_protected_wording_rejects_validate_pass(
@@ -341,9 +368,10 @@ def test_protected_wording_rejects_validate_pass(
     result = _delivery(source, candidate, tmp_path, capsys, specs=specs, protected_required=True, edit_allowed=True)
     assert result["validation"]["ok"] is True
     assert result["validation"]["exit_code"] == 0
-    assert result["protected"]["status"] == "ROLLBACK"
-    assert result["delivery"]["delivery_status"] == "ROLLBACK"
-    assert result["delivery"]["full_pass"] is False
+    assert result["protected"]["status"] == "FAIL"
+    assert result["protected"]["failure_class"] == "protected_bytes"
+    assert result["file_checks"]["file_status"] == "FILE_CHECKS_FAIL"
+    assert result["file_checks"]["scientific_acceptance"] is False
 
 
 def test_duplicate_order_and_whitespace_are_not_substring_checks() -> None:
@@ -352,7 +380,7 @@ def test_duplicate_order_and_whitespace_are_not_substring_checks() -> None:
     changed = "# Цель\nИзучить частоту осложнений.\n\n# Методы\nОценить частоту осложнений.\n"
     exact = "# Цель\nОценить частоту осложнений."
     compared = CHECKS.compare_protected(repeated, changed, [{"id": "goal", "exact": exact}])
-    assert compared["status"] == "ROLLBACK"
+    assert compared["status"] == "FAIL"
     assert "Оценить частоту осложнений." in changed
     ordered = "# Цель\nОценить частоту осложнений.\n\n# Ограничения\nДизайн ретроспективный.\n"
     swapped = "# Ограничения\nДизайн ретроспективный.\n\n# Цель\nОценить частоту осложнений.\n"
@@ -360,21 +388,21 @@ def test_duplicate_order_and_whitespace_are_not_substring_checks() -> None:
         {"id": "goal", "exact": "# Цель\nОценить частоту осложнений."},
         {"id": "limit", "exact": "# Ограничения\nДизайн ретроспективный."},
     ]
-    assert CHECKS.compare_protected(ordered, swapped, specs)["status"] == "ROLLBACK"
+    assert CHECKS.compare_protected(ordered, swapped, specs)["status"] == "FAIL"
     duplicated_source = "# Цель\nОценить частоту осложнений.\n"
     duplicated = duplicated_source + "Оценить частоту осложнений.\n"
     assert (
         CHECKS.compare_protected(
             duplicated_source, duplicated, [{"id": "goal-line", "exact": "Оценить частоту осложнений."}]
         )["status"]
-        == "ROLLBACK"
+        == "FAIL"
     )
     spaced = "# Цель\nОценить  частоту осложнений.\n"
     assert (
         CHECKS.compare_protected(
             duplicated_source, spaced, [{"id": "goal", "exact": "# Цель\nОценить частоту осложнений."}]
         )["status"]
-        == "ROLLBACK"
+        == "FAIL"
     )
 
 
@@ -393,14 +421,20 @@ def test_shifted_protected_block_allows_neighbor_edit(
         specs=specs,
         protected_required=True,
         edit_allowed=True,
-        review=STYLE,
+        review=LEGACY_DECLARATION,
     )
     assert result["validation"]["ok"] is True
     item = result["protected"]["items"][0]
     assert item["status"] == "PASS"
     assert item["shifted"] is True
     assert item["sha256"] == CHECKS.sha256_bytes(specs[0]["exact"].encode("utf-8"))
-    assert result["delivery"]["delivery_status"] == "APPLIED_AND_VERIFIED"
+    checks = result["file_checks"]
+    assert checks["file_status"] == "FILE_CHECKS_PASS"
+    assert checks["semantic_review_required"] is True
+    assert checks["scientific_acceptance"] is False
+    assert checks["review_binding"]["bound"] is False
+    assert checks["review_binding"]["legacy_declaration"] is True
+    assert "APPLIED_AND_VERIFIED" not in json.dumps(checks)
 
 
 @pytest.mark.parametrize(
@@ -443,14 +477,21 @@ def test_shifted_protected_block_allows_neighbor_edit(
         ),
     ],
 )
-def test_named_invariant_rejects_formal_validate(
+def test_named_invariant_is_not_classified_by_helper(
     source: str, candidate: str, tmp_path: Path, capsys: pytest.CaptureFixture[str], quiet: None
 ) -> None:
-    """опасный кандидат отклоняется по инварианту, даже если validate молчит"""
-    result = _delivery(source, candidate, tmp_path, capsys, edit_allowed=True, review=STYLE)
-    assert result["screen"]["breaches"]
-    assert result["delivery"]["delivery_status"] == "ROLLBACK"
-    assert result["delivery"]["full_pass"] is False
+    """опасная пара не получает машинную приёмку; вето редактора проверяет контракт R2"""
+    result = _delivery(source, candidate, tmp_path, capsys, edit_allowed=True, review=LEGACY_DECLARATION)
+    checks = result["file_checks"]
+    assert checks["scientific_acceptance"] is False
+    assert checks["semantic_review_required"] is True
+    assert checks["review_binding"]["bound"] is False
+    assert checks["review_binding"]["legacy_declaration"] is True
+    dumped = json.dumps(checks, ensure_ascii=False)
+    assert "style_only_delta" not in dumped
+    assert "APPLIED_AND_VERIFIED" not in dumped
+    assert "screen" not in result
+    assert result["validation"]["parsed"] is True
 
 
 def test_unit_warning_stays_blocking_when_marked_resolved(
@@ -460,33 +501,48 @@ def test_unit_warning_stays_blocking_when_marked_resolved(
     source = "В исследование включали пациентов с абсцессами диаметром более 3 см."
     candidate = "В исследование включали пациентов с абсцессами диаметром более 3 мм."
     result = _delivery(
-        source, candidate, tmp_path, capsys, edit_allowed=True, review=STYLE, warnings_resolved=["единица"]
+        source,
+        candidate,
+        tmp_path,
+        capsys,
+        edit_allowed=True,
+        review=LEGACY_DECLARATION,
+        warnings_resolved=["единица"],
     )
     assert result["validation"]["ok"] is True
     assert "единица" in result["validation"]["warning_kinds"]
-    assert result["delivery"]["delivery_status"] == "ROLLBACK"
+    assert "warnings_resolved" in result["file_checks"]["ignored_inputs"]
+    assert result["file_checks"]["file_status"] == "FILE_CHECKS_FAIL"
+    assert result["file_checks"]["scientific_acceptance"] is False
 
 
 def test_changed_number_is_rollback(tmp_path: Path, capsys: pytest.CaptureFixture[str], quiet: None) -> None:
     """замена 48 на 84 отвергается и валидатором, и сверкой чисел"""
     source = "В исследование включили 48 пациентов.\n"
     candidate = "В исследование включили 84 пациентов.\n"
-    result = _delivery(source, candidate, tmp_path, capsys, edit_allowed=True, review=STYLE)
+    result = _delivery(source, candidate, tmp_path, capsys, edit_allowed=True, review=LEGACY_DECLARATION)
     assert result["validation"]["ok"] is False
     assert result["validation"]["exit_code"] == 1
-    assert result["delivery"]["delivery_status"] == "ROLLBACK"
+    assert result["file_checks"]["file_status"] == "FILE_CHECKS_FAIL"
+    assert result["file_checks"]["scientific_acceptance"] is False
 
 
 def test_noop_and_allowed_edits(tmp_path: Path, capsys: pytest.CaptureFixture[str], quiet: None) -> None:
     """B01 остаётся no-op, B04 и соседний абзац B08/B12 проходят оба контроля"""
     b01 = BY_ID["B01"]["source"]
     untouched = _delivery(b01, b01, tmp_path, capsys)
-    assert untouched["delivery"]["delivery_status"] == "NO_EDIT_NEEDED"
-    assert untouched["delivery"]["full_pass"] is True
+    assert untouched["file_checks"]["file_status"] == "FILE_CHECKS_PASS"
+    assert untouched["file_checks"]["full_range_file_pass"] is True
+    assert untouched["file_checks"]["text_changed"] is False
+    assert untouched["file_checks"]["semantic_review_required"] is False
+    assert untouched["file_checks"]["scientific_acceptance"] is False
     b04 = BY_ID["B04"]
-    edited = _delivery(b04["source"], b04["candidate"], tmp_path, capsys, edit_allowed=True, review=STYLE)
+    edited = _delivery(b04["source"], b04["candidate"], tmp_path, capsys, edit_allowed=True, review=LEGACY_DECLARATION)
     assert edited["validation"]["ok"] is True
-    assert edited["delivery"]["delivery_status"] == "APPLIED_AND_VERIFIED"
+    assert edited["file_checks"]["file_status"] == "FILE_CHECKS_PASS"
+    assert edited["file_checks"]["semantic_review_required"] is True
+    assert edited["file_checks"]["scientific_acceptance"] is False
+    assert edited["file_checks"]["review_binding"]["bound"] is False
     b08 = BY_ID["B08"]["source"]
     b08_candidate = b08.replace(
         "Следует отметить, что анализ включает 48 историй болезни.",
@@ -495,10 +551,18 @@ def test_noop_and_allowed_edits(tmp_path: Path, capsys: pytest.CaptureFixture[st
     )
     specs = [{"id": f"p{i}", "exact": exact} for i, exact in enumerate(BY_ID["B08"]["protected_exact"])]
     kept = _delivery(
-        b08, b08_candidate, tmp_path, capsys, specs=specs, protected_required=True, edit_allowed=True, review=STYLE
+        b08,
+        b08_candidate,
+        tmp_path,
+        capsys,
+        specs=specs,
+        protected_required=True,
+        edit_allowed=True,
+        review=LEGACY_DECLARATION,
     )
     assert kept["protected"]["status"] == "PASS"
-    assert kept["delivery"]["delivery_status"] == "APPLIED_AND_VERIFIED"
+    assert kept["file_checks"]["file_status"] == "FILE_CHECKS_PASS"
+    assert kept["file_checks"]["scientific_acceptance"] is False
     b12 = BY_ID["B12"]["source"]
     b12_candidate = b12.replace(
         "Следует отметить, что проанализированы 48 историй болезни.",
@@ -507,32 +571,65 @@ def test_noop_and_allowed_edits(tmp_path: Path, capsys: pytest.CaptureFixture[st
     )
     specs = [{"id": f"p{i}", "exact": exact} for i, exact in enumerate(BY_ID["B12"]["protected_exact"])]
     composite = _delivery(
-        b12, b12_candidate, tmp_path, capsys, specs=specs, protected_required=True, edit_allowed=True, review=STYLE
+        b12,
+        b12_candidate,
+        tmp_path,
+        capsys,
+        specs=specs,
+        protected_required=True,
+        edit_allowed=True,
+        review=LEGACY_DECLARATION,
     )
     assert composite["protected"]["status"] == "PASS"
     assert "48" in b12_candidate
-    assert composite["delivery"]["delivery_status"] == "APPLIED_AND_VERIFIED"
+    assert composite["file_checks"]["scientific_acceptance"] is False
+    assert composite["file_checks"]["semantic_review_required"] is True
 
 
 def test_author_token_change_is_explicit(tmp_path: Path, capsys: pytest.CaptureFixture[str], quiet: None) -> None:
-    """замена «описаны» на «приведены» требует записи, а подмена диагноза стилем не прикрывается"""
+    """список токенов и галочка не прикрывают замену; полная запись тоже не принимает смысл"""
     source = BY_ID["B03"]["source"]
     candidate = BY_ID["B03"]["candidate"]
-    missing = _delivery(source, candidate, tmp_path, capsys, edit_allowed=True, review=STYLE)
-    assert missing["delivery"]["delivery_status"] != "APPLIED_AND_VERIFIED"
-    review = {
+    missing = _delivery(source, candidate, tmp_path, capsys, edit_allowed=True, review=LEGACY_DECLARATION)
+    assert missing["file_checks"]["scientific_acceptance"] is False
+    assert missing["file_checks"]["review_binding"]["bound"] is False
+    token_review = {
         "style_only": False,
         "note": "автор разрешил одну замену повтора",
         "invariants_checked": ["осложнения", "операция"],
         "token_changes": [{"removed": "описаны", "added": "приведены"}],
     }
-    approved = _delivery(source, candidate, tmp_path, capsys, edit_allowed=True, review=review)
-    assert approved["validation"]["ok"] is True
-    assert approved["delivery"]["delivery_status"] == "APPLIED_AND_VERIFIED"
+    tokens = _delivery(source, candidate, tmp_path, capsys, edit_allowed=True, review=token_review)
+    assert tokens["validation"]["ok"] is True
+    assert tokens["file_checks"]["review_binding"]["bound"] is False
+    assert tokens["file_checks"]["scientific_acceptance"] is False
+    bound = CHECKS.bind_review(
+        {
+            "source_sha256": CHECKS.sha256_bytes(source.encode("utf-8")),
+            "candidate_sha256": CHECKS.sha256_bytes(candidate.encode("utf-8")),
+            "decision": "ACCEPT",
+            "changes": [
+                {
+                    "before": source,
+                    "after": candidate,
+                    "locator": "предложение 1",
+                    "defect": "повтор «описаны»",
+                    "permission": "автор разрешил одну замену",
+                    "source_claim": "Описаны осложнения после операции.",
+                    "candidate_claim": "Приведены те же осложнения после той же операции.",
+                }
+            ],
+        },
+        CHECKS.sha256_bytes(source.encode("utf-8")),
+        CHECKS.sha256_bytes(candidate.encode("utf-8")),
+    )
+    assert bound["bound"] is True
+    assert bound["scientific_acceptance"] is False
     anatomy_source = "В исследование включили 48 пациентов с паховыми грыжами."
     anatomy = anatomy_source.replace("паховыми", "бедренными")
-    hidden = _delivery(anatomy_source, anatomy, tmp_path, capsys, edit_allowed=True, review=STYLE)
-    assert hidden["delivery"]["delivery_status"] != "APPLIED_AND_VERIFIED"
+    hidden = _delivery(anatomy_source, anatomy, tmp_path, capsys, edit_allowed=True, review=LEGACY_DECLARATION)
+    assert hidden["file_checks"]["scientific_acceptance"] is False
+    assert hidden["file_checks"]["review_binding"]["legacy_declaration"] is True
 
 
 def test_missing_cli_file_and_bad_utf8(tmp_path: Path, capsys: pytest.CaptureFixture[str], quiet: None) -> None:
@@ -549,13 +646,13 @@ def test_missing_cli_file_and_bad_utf8(tmp_path: Path, capsys: pytest.CaptureFix
     assert out.strip() == ""
     scan = CHECKS.inspect_scan("", code)
     coverage = CHECKS.coverage_decision("В исследование включили 48 пациентов.", scan)
-    delivery = CHECKS.decide_delivery(
+    file_checks = CHECKS.aggregate_file_checks(
         "В исследование включили 48 пациентов.",
         "В исследование включили 48 пациентов.",
         coverage,
     )
-    assert delivery["delivery_status"] == "BLOCKED"
-    assert delivery["mock"] is False
+    assert file_checks["file_status"] == "BLOCKED"
+    assert file_checks["mock"] is False
 
 
 def test_unresolved_warning_blocks_acceptance() -> None:
@@ -584,9 +681,27 @@ def test_unresolved_warning_blocks_acceptance() -> None:
         mock=True,
     )
     coverage = CHECKS.coverage_decision(source, scan)
-    delivery = CHECKS.decide_delivery(source, source, coverage, validation=validation, mock=True)
-    assert delivery["delivery_status"] == "BLOCKED"
-    assert delivery["mock"] is True
+    file_checks = CHECKS.aggregate_file_checks(source, source, coverage, validation=validation, scan=scan, mock=True)
+    assert file_checks["file_status"] == "BLOCKED"
+    assert file_checks["mock"] is True
+    plain_validation = CHECKS.inspect_validate(json.dumps(payload), 0, mock=False)
+    plain_scan = CHECKS.inspect_scan(
+        json.dumps(
+            {
+                "score": 0,
+                "issues": [],
+                "stats": {"words": 5, "contextMode": "academic"},
+                "meta": {"schema": 1},
+            }
+        ),
+        0,
+        mock=False,
+    )
+    plain_coverage = CHECKS.coverage_decision(source, plain_scan)
+    plain = CHECKS.aggregate_file_checks(source, source, plain_coverage, validation=plain_validation, scan=plain_scan)
+    assert plain["mock"] is False
+    assert plain["file_status"] == "FILE_CHECKS_FAIL"
+    assert "единица" in plain["warning_kinds"]
 
 
 def test_extraction_gap_blocks_full_range() -> None:
@@ -607,8 +722,9 @@ def test_extraction_gap_blocks_full_range() -> None:
     coverage = CHECKS.coverage_decision(source, scan, missing_required=["страница 2"], representation="extracted")
     assert coverage["global_blocked"] is True
     assert "страница 2" in " ".join(coverage["reasons"])
-    delivery = CHECKS.decide_delivery(source, source, coverage, mock=True)
-    assert delivery["full_pass"] is False
+    file_checks = CHECKS.aggregate_file_checks(source, source, coverage, mock=True)
+    assert file_checks["full_range_file_pass"] is False
+    assert file_checks["file_status"] == "BLOCKED"
 
 
 def test_commands_are_consistent_raw_and_rendered() -> None:

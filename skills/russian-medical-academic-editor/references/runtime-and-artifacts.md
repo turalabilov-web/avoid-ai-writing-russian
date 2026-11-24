@@ -52,13 +52,18 @@ Stdout пиши в отчёт как есть. Stderr и код выхода з�
 
 Нулевой `stats.words`, ненулевой `stats.ignoredRegions` или неразобранное исключение не дают `NO_EDIT_NEEDED` и `APPLIED_AND_VERIFIED` на весь запрошенный диапазон. Реестр покрытия и результат по каждому защищённому идентификатору пиши в эпикриз или в обёртку. Вложенный `raw_report` хранит объект CLI без правки полей. Пятый обязательный файл не создавай.
 
-Файл `checks.py` рядом с `SKILL.md` считает те же файловые решения. Пример из каталога навыка, пути абсолютные:
+Файл `checks.py` рядом с `SKILL.md` читает сырые байты и уже записанный JSON. Окончания строк он не переводит. Пример из каталога навыка, пути абсолютные:
 
 ```bash
+python checks.py sha256 "$ORIGINAL"
 python checks.py coverage --source "$ORIGINAL" --scan-stdout "$SCAN_JSON" --exit-code 0
+python checks.py bind --source "$ORIGINAL" --spec "$SPEC"
+python checks.py protect --source "$ORIGINAL" --candidate "$CLEAN" --registry "$REGISTRY"
+python checks.py read-back --file "$CLEAN" --sha256 "$EXPECTED"
+python checks.py gate --request "$REQUEST"
 ```
 
-Код выхода помощника не является приёмкой текста. Если помощника нет, повтори сверку чтением файлов.
+Файловый статус бывает `FILE_CHECKS_PASS`, `FILE_CHECKS_FAIL` или `BLOCKED`. Для изменённой пары ответ содержит `semantic_review_required`. Это не статус текста и не научная приёмка. Помощник не ставит `NO_EDIT_NEEDED`, `REJECT_FINDING`, `APPLIED_AND_VERIFIED` и научный `ROLLBACK`. Запись сверки он принимает только вместе с SHA-256 фактических байтов; совпадение хэшей не доказывает вывод. Код выхода помощника не является приёмкой текста. Если помощника нет, повтори сверку чтением байтов.
 
 Код 0 у `scan` значит, что процесс завершился. Находки смотри в JSON. Код 0 и `ok: true` у `validate` значат, что автоматическая проверка не нашла нарушений. Поля `warnings` и `swappedNumbers` разбери по одному. Пустые списки не заменяют сверку смысла.
 
