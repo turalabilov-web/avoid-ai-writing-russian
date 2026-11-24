@@ -75,6 +75,7 @@ def test_skill_files_and_license() -> None:
         "LICENSE",
         "NOTICE.md",
         "SKILL.md",
+        "checks.py",
         "references/decisions-and-examples.md",
         "references/medical-invariants.md",
         "references/runtime-and-artifacts.md",

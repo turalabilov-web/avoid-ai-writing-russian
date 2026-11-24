@@ -234,6 +234,38 @@ aiw-ru models install
 
 Текст навыка для агента печатает `aiw-ru skill russian-medical-academic-editor`.
 
+### Кандидат russian-medical-academic-editor
+
+Команды из раздела «Установка» ставят опубликованный репозиторий. Номер `2.10.1` не доказывает, что в этой публикации есть навык медицинской редактуры. Источник кандидата — проверенная рабочая копия или пакет, собранный из неё. Точный коммит и SHA-256 сборки пишутся в отчёте передачи. Адрес будущего выпуска здесь не придумывается, и отдельный выпуск этими строками не объявляется.
+
+Два пути не смешивают.
+
+Архив навыка. В папку навыков кладётся один каталог `russian-medical-academic-editor`: `SKILL.md`, лицензия, `NOTICE.md`, справки и файл `checks.py`. Команды `aiw-ru` в архиве нет. Рядом нужна совместимая локальная CLI. Перед работой сверь `aiw-ru --version` и путь исполняемого файла. Если CLI нет, статус `BLOCKED`. `MANUAL_ONLY` только по прямой просьбе, без выдуманного отчёта.
+
+Проверенная сборка проекта. Проверку делай из каталога вне исходников, на чистой распаковке:
+
+```bash
+aiw-ru skill --json
+```
+
+```bash
+aiw-ru skill russian-medical-academic-editor
+```
+
+```bash
+aiw-ru skill russian-medical-academic-editor references/medical-invariants.md
+```
+
+```bash
+aiw-ru skill russian-medical-academic-editor references/runtime-and-artifacts.md
+```
+
+```bash
+aiw-ru skill russian-medical-academic-editor references/decisions-and-examples.md
+```
+
+В списке должны остаться `avoid-ai-writing-russian` и `antiplagiat`. Если тексты или происхождение не совпали с переданной сборкой, не считай новый навык установленным. Установка в ChatGPT этой инструкцией не утверждается.
+
 ## Детектор
 
 ```bash

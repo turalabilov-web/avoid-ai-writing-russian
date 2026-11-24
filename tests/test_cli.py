@@ -1018,6 +1018,7 @@ def test_skill_lists_skills(cli: Cli):
     assert data[2]["files"] == [
         "LICENSE",
         "NOTICE.md",
+        "checks.py",
         "references/decisions-and-examples.md",
         "references/medical-invariants.md",
         "references/runtime-and-artifacts.md",
